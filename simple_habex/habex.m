@@ -243,8 +243,8 @@ if(use_pr == false)
 
 
     Efs = ifftshift((wavefront.wf)); % wavefront.wf is already fftshifted
-    fitswrite(abs(Efs),'/Users/ajriggs/Downloads/Efs_abs_init_matlab.fits');
-    fitswrite(angle(Efs),'/Users/ajriggs/Downloads/Efs_angle_init_matlab.fits');      
+    fitswrite(abs(Efs),'/Users/poon/Documents/dst/proper-models/simple_habex/poon_files/Efs_abs_init_matlab.fits');
+    fitswrite(angle(Efs),'/Users/poon/Documents/dst/proper-models/simple_habex/poon_files/Efs_angle_init_matlab.fits');      
     
     wavefront = prop_propagate(wavefront, d_fieldstop_m9, 'SURFACE_NAME', 'M9');
     if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_M9_phase_error.fits'], 'WAVEFRONT');  end
