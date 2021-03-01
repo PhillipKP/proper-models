@@ -81,9 +81,9 @@ if(exist('optval','var')==1)
     if ( isfield(optval,'xoffset') );  xoffset = optval.xoffset;  display_variable_name_and_value(xoffset); end
     if ( isfield(optval,'yoffset') );  yoffset = optval.yoffset;  display_variable_name_and_value(yoffset); end
     if ( isfield(optval,'use_dm1') );  use_dm1 = optval.use_dm1;  display_variable_name_and_value(use_dm1); end
-    if ( isfield(optval,'dm1') );  dm1 = optval.dm1;  display_variable_name_and_value(dm1); end
+    if ( isfield(optval,'dm1') );  dm1 = optval.dm1;  figure; imagesc(dm1); title('DM1'); axis equal; axis tight; end
     if ( isfield(optval,'use_dm2') );  use_dm2 = optval.use_dm2;  display_variable_name_and_value(use_dm2); end
-    if ( isfield(optval,'dm2') );  dm2 = optval.dm2;  display_variable_name_and_value(dm2); end
+    if ( isfield(optval,'dm2') );  dm2 = optval.dm2; figure; imagesc(dm2); title('DM2'); axis equal; axis tight; end
     if ( isfield(optval,'use_fpm') );  use_fpm = optval.use_fpm;  display_variable_name_and_value(use_fpm); end
     if ( isfield(optval,'use_lyot_stop') );  use_lyot_stop = optval.use_lyot_stop;  display_variable_name_and_value(use_lyot_stop); end
     if ( isfield(optval,'use_field_stop') );  use_field_stop = optval.use_field_stop;  display_variable_name_and_value(use_field_stop); end
@@ -156,53 +156,120 @@ if( (xoffset ~= 0) || (yoffset ~= 0) )
 	clear xtilt ytilt
 end
 
+% APPLY PRIMARY MIRROR ERROR MAP AND ALTER WAVEFRONT CURVATURE DUE TO 
+% PRIMARY MIRROR 
 if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_PRIMARY_phase_error.fits'], 'WAVEFRONT'); end
 wavefront = prop_lens(wavefront, fl_pri);
 wavefront = prop_define_entrance(wavefront);
 
+% PROPAGATE FROM PRIMARY MIRROR TO SECONDARY MIRROR
 wavefront = prop_propagate(wavefront, d_pri_sec, 'SURFACE_NAME', 'secondary');
+
+% APPLY SECONDARY MIRROR ERROR MAP AND ALTER WAVEFRONT CURVATURE DUE TO 
+% SECONDARY MIRROR
 if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_SECONDARY_phase_error.fits'], 'WAVEFRONT');  end
 wavefront = prop_lens(wavefront, fl_sec);
 
+% PROPAGATE FROM SECONDARY MIRROR TO MIRROR 3
 wavefront = prop_propagate(wavefront, d_sec_m3, 'SURFACE_NAME', 'M3');
+
+% APPLY MIRROR 3 ERROR MAP AND ALTER WAVEFRONT CURVATURE DUE TO 
+% MIRROR 3
 if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_M3_phase_error.fits'], 'WAVEFRONT');  end
 wavefront = prop_lens(wavefront, fl_m3);
 
+% PROPAGATE FROM OAP MIRROR 3 TO THE FOLD MIRROR
 wavefront = prop_propagate(wavefront, d_m3_fold, 'SURFACE_NAME', 'fold');
+
+% APPLY ERROR MAP DUE TO FOLD MIRROR
 if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_FOLD1_phase_error.fits'], 'WAVEFRONT');  end
 
+% PROPAGATE TO THE FAST STEERING MIRROR
 wavefront = prop_propagate(wavefront, d_fold_fsm, 'SURFACE_NAME', 'FSM');	%-- pupil at fast steering mirror (interface with telescope)
+
+% APPLY ERROR MAP DUE TO FAST STEERING MIRROR
 if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_FSM_phase_error.fits'], 'WAVEFRONT');  end
 
+% PROPAGATE TO THE DICHROIC BEAM SPLITTER
 wavefront = prop_propagate(wavefront, d_fsm_dichroic, 'SURFACE_NAME', 'dichroic');
+
+% APPLY ERROR MAP DUE TO DICHROIC BEAM SPLITTER
 if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_DICHROIC_phase_error.fits'], 'WAVEFRONT');  end
 
+% PROPAGATE TO OAP MIRROR 4
 wavefront = prop_propagate(wavefront, d_dichroic_m4, 'SURFACE_NAME', 'M4');
+
+% APPLY ERROR MAP DUE TO OAP MIRROR 4
 if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_M4_phase_error.fits'], 'WAVEFRONT');  end
 wavefront = prop_lens(wavefront, fl_m4);
 
+% PROPAGATE TO OAP MIRROR 5
 wavefront = prop_propagate(wavefront, d_m4_m5, 'SURFACE_NAME', 'M5');
+
+% APPLY ERROR MAP AND AND ALTER WAVEFRONT CURVATURE DUE TO 
+% MIRROR 5 
 if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_M5_phase_error.fits'], 'WAVEFRONT');  end
 wavefront = prop_lens(wavefront, fl_m5);
 
+% PROPAGATE TO DM1
 wavefront = prop_propagate(wavefront, d_m5_dm1, 'SURFACE_NAME', 'DM1');
-if(use_dm1);  wavefront = prop_dm(wavefront, dm1, dm_xc, dm_yc, dm_sampling);  end
+
+% APPLY DM1
+% wavefront: is the current wavefront structure
+% dm1: is the 48 by 48 in which each element represents the height in meters
+% of the corresponding actuator or required surface height at that actuator.
+% dm_xc, dm_yc: X, Y actuator coordinates of the optical axis. The center of the first actuator is (0.0,0.0) and of the last is (nx-1,ny-1).
+% dm_sampling: The distance in meters between DM actuators. 
+if(use_dm1)
+    figure;
+    imagesc(dm1);
+    colorbar;
+    axis equal; axis tight;
+    title('DM1 Actuator Surface Height in Meters');
+    set(gca,'fontsize',16);
+    wavefront = prop_dm(wavefront, dm1, dm_xc, dm_yc, dm_sampling);  
+end
+
+% APPLY ERROR MAP DUE TO DM1
 if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_DM1_phase_error.fits'], 'WAVEFRONT');  end
 
+% PROPAGATE FROM DM1 TO DM2
 wavefront = prop_propagate(wavefront, d_dm1_dm2, 'SURFACE_NAME', 'DM2');
-if(use_dm2);  wavefront = prop_dm(wavefront, dm2, dm_xc, dm_yc, dm_sampling);  end
+
+% APPPLY DM2 
+if(use_dm2)
+    figure;
+    imagesc(dm1);
+    colorbar;
+    axis equal; axis tight;
+    title('DM1 Actuator Surface Height in Meters');
+    set(gca,'fontsize',16);
+    wavefront = prop_dm(wavefront, dm2, dm_xc, dm_yc, dm_sampling);  
+end
+
+% APPLY ERROR MAP DUE TO DM2
 if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_DM2_phase_error.fits'], 'WAVEFRONT');  end
 
+% PROPAGATE TO THE QWP
 wavefront = prop_propagate(wavefront, d_dm2_qwp, 'SURFACE_NAME', 'QWP');	%-- quarter-wave plate
+
+% APPLY ERROR MAP DUE TO THE QWP 
 if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_QWP1_phase_error.fits'], 'WAVEFRONT');  end
 
+% PROPAGATE TO OAP MIRROR 6 WHICH FOCUSES LIGHT ONTO THE FOCAL PLANE
+% MASK
 wavefront = prop_propagate(wavefront, d_qwp_m6, 'SURFACE_NAME', 'M6');
+
+% APPLY ERROR MAP DUE TO OAP MIRROR 6 AND CURVES WAVEFRONT BASED ON FOCAL
+% LENGTH
 if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_M6_phase_error.fits'], 'WAVEFRONT');  end
 wavefront = prop_lens(wavefront, fl_m6);
 
+% PROPAGATES TO THE FOCAL PLANE MASK
 wavefront = prop_propagate(wavefront, d_m6_fpm);
 
 if(use_pr == false)
+    
     % if(use_fpm);  [wavefront, fpm] = prop_8th_order_mask(wavefront, 4.0, 'CIRCULAR');  end %--Band-limited mask
     if(use_fpm)
 
@@ -211,7 +278,8 @@ if(use_pr == false)
         inVal = 0.3;    %-- found empirically
         outVal = 5;     %-- found empirically
 
-        % 1) IFFT to previous pupil
+        % 1) IFFT to previous pupil (The focal planes and pupil planes are
+        % FOURIER CONJUGATES OF EACH OTHER.)
         % 2) Use propcustom_mft_Pup2Vortex2Pup() to go to Lyot plane
         % 3) IFFT to FPM's focal plane  
         EpupPre = ifftshift(ifft2(wavefront.wf))*gridsize; % wavefront.wf is already fftshifted
@@ -221,44 +289,70 @@ if(use_pr == false)
     end
 
 
+    % PROPAGATE TO OAP MIRROR 7 WHICH COLLIMATES THE BEAM
     wavefront = prop_propagate(wavefront, d_fpm_m7, 'SURFACE_NAME', 'M7');
+    
+    % APPLY ERROR MAP AND WAVEFRONT CURVATURE OF OAP MIRROR 7
     if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_M7_phase_error.fits'], 'WAVEFRONT');  end
     wavefront = prop_lens(wavefront, fl_m7);
 
+    % PROPAGATE TO THE LYOT SPOT WHICH IS A PUPIL PLANE
     wavefront = prop_propagate(wavefront, d_m7_lyotstop, 'SURFACE_NAME', 'Lyot stop');
     
+    % APPLY THE ERROR MAP DUE TO THE QWP2  
     if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_QWP2_phase_error.fits'], 'WAVEFRONT');  end
+    
+    % APPLY THE CIRCULAR APERTURE TO APPLY THE LYOT SPOT
     if(use_lyot_stop); wavefront = prop_circular_aperture(wavefront, normLyotDiam, 'NORM');  end
 
+    % PROPAGATES TO OAP MIRROR 8 WHICH FOCUS THE LIGHT
     wavefront = prop_propagate(wavefront, d_lyotstop_m8, 'SURFACE_NAME', 'M8');
+    
+    % APPLY ERROR MAP AND WAVEFRONT DUE TO OAP MIRROR 8 WHICH FOCUSES THE
+    % LIGHT
     if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_M8_phase_error.fits'], 'WAVEFRONT');  end
     wavefront = prop_lens(wavefront, fl_m8);
 
+    % PROPAGATE TO THE FOCUS OF OAP MIRROR 8 
     wavefront = prop_propagate(wavefront, prop_get_distancetofocus(wavefront), 'SURFACE_NAME', 'field stop');
 
+    % APPLIES THE FIELD STOP 
     if(use_field_stop)
         r_stop = field_stop_radius * lambda0_m / lambda_m;
         wavefront = prop_circular_aperture(wavefront, r_stop/pupil_ratio*prop_get_sampling(wavefront));
     end
 
-
+    % PERFORMS AN INVERSE SHIFT AND SAVES THE MAGNITUDE AND PHASE
     Efs = ifftshift((wavefront.wf)); % wavefront.wf is already fftshifted
     fitswrite(abs(Efs),'/Users/poon/Documents/dst/proper-models/simple_habex/poon_files/Efs_abs_init_matlab.fits');
     fitswrite(angle(Efs),'/Users/poon/Documents/dst/proper-models/simple_habex/poon_files/Efs_angle_init_matlab.fits');      
     
+    % PROPAGATES TO OAP MIRROR 9 WHICH COLLIMATES THE BEAM 
     wavefront = prop_propagate(wavefront, d_fieldstop_m9, 'SURFACE_NAME', 'M9');
+    
+    % APPLIES THE ERROR MAP AND THE WAVEFRONT CURVATURE DUE TO OAP MIRROR 9
     if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_M9_phase_error.fits'], 'WAVEFRONT');  end
     wavefront = prop_lens(wavefront, fl_m9);
-
+    
+    
+    % PROPAGATES TO FILTER
     wavefront = prop_propagate(wavefront, d_m9_filter, 'SURFACE_NAME', 'filter');
+    
+    % APPLIES THE ERROR MAP DUE TO THE FILTER
     if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_FILTER_phase_error.fits'], 'WAVEFRONT');  end
 
+    % PROPAGATES TO OAP MIRROR 10 WHICH FOCUS THE BEAM ONTO THE FOCAL PLANE
+    % ARRAY
     wavefront = prop_propagate(wavefront, d_filter_m10, 'SURFACE_NAME', 'M10');
+    
+    % APPLIES THE ERROR MAP DUE TO OAP MIRROR 10 
     if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_M10_phase_error.fits'], 'WAVEFRONT');  end
     wavefront = prop_lens(wavefront, fl_m10);
     
+    % PROPAGATES TO THE FOCAL PLANE ARRAY
     wavefront = prop_propagate(wavefront, prop_get_distancetofocus(wavefront), 'SURFACE_NAME', 'CCD');
 
+    % ENDS THE SIMULATION
     [wavefront, sampling_m] = prop_end(wavefront, 'noabs');
 
     %-- rescale to "final_sampling_lam0" lam0/D per pixel
