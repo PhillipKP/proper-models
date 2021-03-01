@@ -41,6 +41,8 @@ optval.vortexCharge = 6;
 optval.xoffset = 0;
 optval.yoffset = 0;
 
+
+
 %% No Correction
 %--Phase Retrieval Pupil
 
@@ -53,6 +55,8 @@ optval.use_fpm = 0;		%-- use focal plane mask (0 = no FPM)
 optval.use_lyot_stop = 1;	%-- use Lyot stop (0 = no stop)
 optval.use_field_stop = 0;	%-- use field stop (0 = no stop)
 % [Epup, sampling_m]  = habex_vortex(lambda_m, gridsize, optval);
+
+%-- PROP RUN 1 --%
 [Epup, sampling_m] = prop_run(prescription, lambda_um, gridsize, 'quiet', 'passvalue', optval);
 
 mask = 0*Epup;
@@ -62,18 +66,29 @@ mask(abs(Epup) > 0.1*max(abs(Epup(:)))) = 1;
 figure(1); imagesc(abs(Epup)); axis xy equal tight; colorbar; title('abs(E$_{pupil}$)', 'Interpreter','Latex'); set(gca,'Fontsize',20); drawnow;
 figure(2); imagesc(mask.*angle(Epup),[-1, 1]); axis xy equal tight; colorbar; title('angle(E$_{pupil}$)', 'Interpreter','Latex'); set(gca,'Fontsize',20); drawnow;
 
-% PSF for normalization
+
+%% PSF for normalization
 optval.use_pr = false;
 optval.use_errors = 1;		%-- 1 = use optical surface errors, 0 = none
 optval.use_fpm = 0;		%-- use focal plane mask (0 = no FPM)
 optval.use_lyot_stop = 1;	%-- use Lyot stop (0 = no stop)
 optval.use_field_stop = 0;	%-- use field stop (0 = no stop)
 % [EforNorm, sampling_m]  = habex_vortex(lambda_m, gridsize, optval);
-[EforNorm, sampling_m] = prop_run(prescription, lambda_um, gridsize, 'quiet', 'passvalue', optval);
+
+
+%-- PROP RUN 2 --%
+[EforNorm, sampling_m] = prop_run(prescription, lambda_um, gridsize, 'passvalue', optval);
 
 IforNorm = abs(EforNorm).^2;
 I00 = max(IforNorm(:));
-figure(3); imagesc(log10(IforNorm/I00),[-7 0]); axis xy equal tight; colorbar; title('PSF for Normalization)', 'Interpreter','Latex'); set(gca,'Fontsize',20); drawnow;
+
+
+figure(3); 
+imagesc(log10(IforNorm/I00),[-7 0]); 
+axis xy equal tight; colorbar; title('PSF for Normalization', 'Interpreter','Latex'); 
+set(gca,'Fontsize',20); 
+drawnow;
+
 
 % Coronagraphic PSF
 optval.use_errors = 1;		%-- 1 = use optical surface errors, 0 = none
@@ -81,10 +96,13 @@ optval.use_fpm = 1;		%-- use focal plane mask (0 = no FPM)
 optval.use_lyot_stop = 1;	%-- use Lyot stop (0 = no stop)
 optval.use_field_stop = 1;	%-- use field stop (0 = no stop)
 % [Ecoro, sampling_m]  = habex_vortex(lambda_m, gridsize, optval);
-[Ecoro, sampling_m] = prop_run(prescription, lambda_um, gridsize, 'quiet', 'passvalue', optval);
+
+%-- PROP RUN 3 --%
+[Ecoro, sampling_m] = prop_run(prescription, lambda_um, gridsize, 'passvalue', optval);
 Inorm = abs(Ecoro).^2 / I00;
 figure(4); imagesc(log10(Inorm), [-7 -2]); axis xy equal tight; colorbar;
 title('Coronagraphic PSF before Flattening', 'Fontsize', 16); drawnow;
+
 
 
 %% Corrected
@@ -100,6 +118,9 @@ optval.use_fpm = 0;		%-- use focal plane mask (0 = no FPM)
 optval.use_lyot_stop = 1;	%-- use Lyot stop (0 = no stop)
 optval.use_field_stop = 0;	%-- use field stop (0 = no stop)
 % [Epup, sampling_m]  = habex_vortex(lambda_um, gridsize, optval);
+
+
+%-- PROP RUN 3 --%
 [Epup, sampling_m] = prop_run(prescription, lambda_um, gridsize, 'quiet', 'passvalue', optval);
 
 mask = 0*Epup;
@@ -116,10 +137,20 @@ optval.use_fpm = 0;		%-- use focal plane mask (0 = no FPM)
 optval.use_lyot_stop = 1;	%-- use Lyot stop (0 = no stop)
 optval.use_field_stop = 0;	%-- use field stop (0 = no stop)
 % [EforNorm, sampling_m]  = habex_vortex(lambda_m, gridsize, optval);
+
+%-- PROP RUN 4 --%
 [EforNorm, sampling_m] = prop_run(prescription, lambda_um, gridsize, 'quiet', 'passvalue', optval);
 IforNorm = abs(EforNorm).^2;
 I00 = max(IforNorm(:));
-figure(13); imagesc(log10(IforNorm/I00),[-7 0]); axis xy equal tight; colorbar; title('PSF for Normalization)', 'Interpreter','Latex'); set(gca,'Fontsize',20); drawnow;
+
+
+figure(13); 
+imagesc(log10(IforNorm/I00),[-7 0]); 
+axis xy equal tight; 
+colorbar; 
+title('PSF for Normalization)', 'Interpreter','Latex');
+set(gca,'Fontsize',20);
+drawnow;
 
 % Coronagraphic PSF
 optval.use_errors = 1;		%-- 1 = use optical surface errors, 0 = none
@@ -127,6 +158,8 @@ optval.use_fpm = 1;		%-- use focal plane mask (0 = no FPM)
 optval.use_lyot_stop = 1;	%-- use Lyot stop (0 = no stop)
 optval.use_field_stop = 1;	%-- use field stop (0 = no stop)
 % [Ecoro, sampling_m]  = habex_vortex(lambda_m, gridsize, optval);
+
+%-- PROP RUN 5 --%
 [Ecoro, sampling_m] = prop_run(prescription, lambda_um, gridsize, 'quiet', 'passvalue', optval);
 Inorm = abs(Ecoro).^2 / I00;
 figure(14); imagesc(log10(Inorm), [-7 -2]); axis xy equal tight; colorbar;
