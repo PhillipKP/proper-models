@@ -40,6 +40,9 @@
 
 function [wavefront, sampling_m] = habex(lambda_m, gridsize, optval)
 
+
+global use_dm1_count
+
 nact = 64;                       %-- number of actuators across DM
 nact_across_pupil = 62;		%-- number of actuators across pupil       ##### NOT THE ACTUAL NUMBER ####
 dm_xc = 31.5;                   %-- wavefront centered at corner of DM actuator (0,0 is center of 1st actuator)
@@ -221,12 +224,18 @@ wavefront = prop_propagate(wavefront, d_m5_dm1, 'SURFACE_NAME', 'DM1');
 % dm_xc, dm_yc: X, Y actuator coordinates of the optical axis. The center of the first actuator is (0.0,0.0) and of the last is (nx-1,ny-1).
 % dm_sampling: The distance in meters between DM actuators.
 if(use_dm1)
-    figure;
+    
+    % Increments global varaible use_dm1_count by 1
+    use_dm1_count = use_dm1_count + 1;
+    
+    figure(38301);
     imagesc(dm1);
     colorbar;
     axis equal; axis tight;
-    title('DM1 Actuator Surface Height in Meters');
+    title({'DM1 Actuator Surface Height in Meters.',[' DM1 Use ' num2str(use_dm1_count) '']});
     set(gca,'fontsize',16);
+    
+    
     wavefront = prop_dm(wavefront, dm1, dm_xc, dm_yc, dm_sampling);
 end
 
@@ -239,7 +248,7 @@ wavefront = prop_propagate(wavefront, d_dm1_dm2, 'SURFACE_NAME', 'DM2');
 % APPPLY DM2
 if(use_dm2)
     figure;
-    imagesc(dm1);
+    imagesc(dm2);
     colorbar;
     axis equal; axis tight;
     title('DM1 Actuator Surface Height in Meters');
@@ -303,7 +312,9 @@ if(use_pr == false)
     if(use_errors); wavefront = prop_errormap(wavefront, [map_dir 'habex_cycle1_QWP2_phase_error.fits'], 'WAVEFRONT');  end
     
     % APPLY THE CIRCULAR APERTURE TO APPLY THE LYOT STOP
-    if(use_lyot_stop); wavefront = prop_circular_aperture(wavefront, normLyotDiam, 'NORM');  end
+    if(use_lyot_stop)
+        wavefront = prop_circular_aperture(wavefront, normLyotDiam, 'NORM'); 
+    end
     
     % PROPAGATES TO OAP MIRROR 8 WHICH FOCUS THE LIGHT
     wavefront = prop_propagate(wavefront, d_lyotstop_m8, 'SURFACE_NAME', 'M8');
@@ -319,6 +330,7 @@ if(use_pr == false)
     % APPLIES THE FIELD STOP
     if(use_field_stop)
         r_stop = field_stop_radius * lambda0_m / lambda_m;
+    
         wavefront = prop_circular_aperture(wavefront, r_stop/pupil_ratio*prop_get_sampling(wavefront));
     end
     

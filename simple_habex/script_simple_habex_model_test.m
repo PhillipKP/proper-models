@@ -14,6 +14,11 @@
 
 clear all
 
+
+global use_dm1_count;
+use_dm1_count = 0;
+
+
 prescription = 'habex';
 
 lambda0 = 550e-9;    %--Central wavelength of the whole spectral bandpass [meters]
@@ -100,8 +105,12 @@ optval.use_field_stop = 1;	%-- use field stop (0 = no stop)
 %-- PROP RUN 3 --%
 [Ecoro, sampling_m] = prop_run(prescription, lambda_um, gridsize, 'passvalue', optval);
 Inorm = abs(Ecoro).^2 / I00;
-figure(4); imagesc(log10(Inorm), [-7 -2]); axis xy equal tight; colorbar;
-title('Coronagraphic PSF before Flattening', 'Fontsize', 16); drawnow;
+
+figure(4);
+imagesc(log10(Inorm), [-7 -2]); 
+axis xy equal tight; colorbar;
+title('Coronagraphic PSF before Flattening', 'Fontsize', 16); 
+drawnow;
 
 
 
