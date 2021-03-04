@@ -232,7 +232,8 @@ if(use_dm1)
     imagesc(dm1);
     colorbar;
     axis equal; axis tight;
-    title({'DM1 Actuator Surface Height in Meters.',[' DM1 Use ' num2str(use_dm1_count) '']});
+    %title({'DM1 Actuator Surface Height in Meters.',[' DM1 Use ' num2str(use_dm1_count) '']});
+    title('DM1 Actuator Surface Height in Meters.');
     set(gca,'fontsize',16);
     
     
@@ -251,7 +252,7 @@ if(use_dm2)
     imagesc(dm2);
     colorbar;
     axis equal; axis tight;
-    title('DM1 Actuator Surface Height in Meters');
+    title('DM1 Commanded Actuator Surface Height in (m)');
     set(gca,'fontsize',16);
     wavefront = prop_dm(wavefront, dm2, dm_xc, dm_yc, dm_sampling);
 end
