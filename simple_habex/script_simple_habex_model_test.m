@@ -50,9 +50,11 @@ optval.yoffset = 0;
 optval.use_errors = 0;
 
 %--Parameters for generating a sine wave on DM1
-dm_use_custom = true
-dm_scale_factor = 2e-9 % Scales the height of the command DM1 surface heights.
-dm_x_spatial_freq = 0.20 % The spatial frequency
+dm_use_custom = true;
+dm_scale_factor = 3e-9; % Scales the height of the command DM1 surface heights.
+dm_x_spat_freq = 0.20; % The spatial frequency in X
+dm_y_spat_freq = 0.20; % The spatial frequency in X
+
 
 
 % %% No Correction
@@ -144,7 +146,11 @@ disp(['Mean DM Surface Height ', num2str(mean(dm_surf_height(:))), ''])
 % INSERT CUSTOM DM1 ARRAY
 if dm_use_custom == true
     
-    dm_surf_height = dm_set_sine_pattern(dm_scale_factor, dm_x_spatial_freq);
+    
+    dm_surf_height = dm_set_sine_pattern(dm_scale_factor, ...
+        dm_x_spat_freq, dm_y_spat_freq);
+      
+   
     
     disp('New DM Map')
     
@@ -185,7 +191,6 @@ figure(12); imagesc(mask.*angle(Epup),[-1, 1]); axis xy equal tight; colorbar; t
 
 % PSF for normalization
 optval.use_pr = false;
-
 optval.use_fpm = 0;		%-- use focal plane mask (0 = no FPM)
 optval.use_lyot_stop = 1;	%-- use Lyot stop (0 = no stop)
 optval.use_field_stop = 0;	%-- use field stop (0 = no stop)
@@ -210,26 +215,16 @@ drawnow;
 
 figure;
 imagesc(IforNorm/I00);
-axis xy equal tight;
-colorbar;
 title({'PSF For Normalization','Normalized, Linear color scale'}, 'Interpreter','Latex');
-set(gca,'Fontsize',20);
-drawnow;
-
+axis xy equal tight; colorbar; set(gca,'Fontsize',20); drawnow;
 
 
 figure(13);
 imagesc(log10(IforNorm/I00),[-7 0]);
-axis xy equal tight;
-colorbar;
 title({'PSF for Normalization','Normalized, Log10 Scale'}, 'Interpreter','Latex');
-set(gca,'Fontsize',20);
-drawnow;
-
-
+axis xy equal tight; colorbar; set(gca,'Fontsize',20); drawnow;
 
 % Coronagraphic PSF
-
 optval.use_fpm = 1;		%-- use focal plane mask (0 = no FPM)
 optval.use_lyot_stop = 1;	%-- use Lyot stop (0 = no stop)
 optval.use_field_stop = 1;	%-- use field stop (0 = no stop)
