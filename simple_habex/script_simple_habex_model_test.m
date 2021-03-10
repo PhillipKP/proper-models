@@ -213,10 +213,10 @@ set(gca,'Fontsize',20);
 drawnow;
 
 
-figure;
-imagesc(IforNorm/I00);
-title({'PSF For Normalization','Normalized, Linear color scale'}, 'Interpreter','Latex');
-axis xy equal tight; colorbar; set(gca,'Fontsize',20); drawnow;
+% figure;
+% imagesc(IforNorm/I00);
+% title({'PSF For Normalization','Normalized, Linear color scale'}, 'Interpreter','Latex');
+% axis xy equal tight; colorbar; set(gca,'Fontsize',20); drawnow;
 
 
 figure(13);
@@ -232,15 +232,27 @@ optval.use_field_stop = 1;	%-- use field stop (0 = no stop)
 
 %-- PROP RUN 5 --%
 [Ecoro, sampling_m] = prop_run(prescription, lambda_um, gridsize, 'quiet', 'passvalue', optval);
-Inorm = abs(Ecoro).^2 / I00;
 
 
+
+% Normalized intensity is defined as the 2D intensity of the PSF with the
+% FPM, LS, and FS in divided by the max of the PSF without the FPM, and FS
+% in which is the variable I00
+
+Inorm = abs(Ecoro).^2 / I00; % This is the normalized intensity.
+
+
+% Plots the Normalized Intensity:
 
 figure(14);
 imagesc(log10(Inorm), [-7 0]);
-axis xy equal tight; colorbar;
-title('Coronagraphic PSF with sine wave on DM', 'Interpreter','Latex');
-set(gca,'Fontsize',20);
-drawnow;
+title('Normalized Intensity with 2D sine wave on DM', 'Interpreter','Latex');
+axis xy equal tight; colorbar; set(gca,'Fontsize',20); drawnow;
+
+
+
+
+
+
 
 
