@@ -76,29 +76,29 @@ use_pr = false; %-- whether to return a fake phase retrieval of the pupil rather
 %-- override defaults using values passed using optval structure
 
 if(exist('optval','var')==1)
-    if ( isfield(optval,'lam0') );  lambda0_um = optval.lam0; display_variable_name_and_value(lambda0_um);  end
-    if ( isfield(optval,'lambda0_um') );  lambda0_um = optval.lambda0_um;  display_variable_name_and_value(lambda0_um); end
-    if ( isfield(optval,'use_errors') );  use_errors = optval.use_errors;  display_variable_name_and_value(use_errors); end
-    if ( isfield(optval,'zindex') );  zindex = optval.zindex;  display_variable_name_and_value(zindex); end
-    if ( isfield(optval,'zval') );  zval = optval.zval;  display_variable_name_and_value(zval); end
-    if ( isfield(optval,'xoffset') );  xoffset = optval.xoffset;  display_variable_name_and_value(xoffset); end
-    if ( isfield(optval,'yoffset') );  yoffset = optval.yoffset;  display_variable_name_and_value(yoffset); end
-    if ( isfield(optval,'use_dm1') );  use_dm1 = optval.use_dm1;  display_variable_name_and_value(use_dm1); end
-    if ( isfield(optval,'dm1') );  dm1 = optval.dm1;  figure; imagesc(dm1); title('DM1'); axis equal; axis tight; end
-    if ( isfield(optval,'use_dm2') );  use_dm2 = optval.use_dm2;  display_variable_name_and_value(use_dm2); end
-    if ( isfield(optval,'dm2') );  dm2 = optval.dm2; figure; imagesc(dm2); title('DM2'); axis equal; axis tight; end
-    if ( isfield(optval,'use_fpm') );  use_fpm = optval.use_fpm;  display_variable_name_and_value(use_fpm); end
-    if ( isfield(optval,'use_lyot_stop') );  use_lyot_stop = optval.use_lyot_stop;  display_variable_name_and_value(use_lyot_stop); end
-    if ( isfield(optval,'use_field_stop') );  use_field_stop = optval.use_field_stop;  display_variable_name_and_value(use_field_stop); end
-    if ( isfield(optval,'field_stop_radius') );  field_stop_radius = optval.field_stop_radius;  display_variable_name_and_value(final_sampling_lam0); end
-    if ( isfield(optval,'final_sampling_lam0') );  final_sampling_lam0 = optval.final_sampling_lam0;  display_variable_name_and_value(final_sampling_lam0); end
-    if ( isfield(optval,'nout') );  nout = optval.nout;  display_variable_name_and_value(nout); end
-    if ( isfield(optval,'normLyotDiam') );  normLyotDiam = optval.normLyotDiam; display_variable_name_and_value(normLyotDiam); end
-    if ( isfield(optval,'vortexCharge') );  vortexCharge = optval.vortexCharge; display_variable_name_and_value(vortexCharge); end
-    if ( isfield(optval,'map_dir') );  map_dir = optval.map_dir; display_variable_name_and_value(map_dir); end
-    if ( isfield(optval,'pupil_diam_pix') );  pupil_diam_pix = optval.pupil_diam_pix; display_variable_name_and_value(pupil_diam_pix); end
-    if ( isfield(optval,'pr_pupil_diam_pix') );  pr_pupil_diam_pix = optval.pr_pupil_diam_pix; display_variable_name_and_value(pr_pupil_diam_pix); end
-    if ( isfield(optval,'use_pr') );  use_pr = optval.use_pr; display_variable_name_and_value(use_pr); end
+    if ( isfield(optval,'lam0') );  lambda0_um = optval.lam0; end
+    if ( isfield(optval,'lambda0_um') );  lambda0_um = optval.lambda0_um;  end
+    if ( isfield(optval,'use_errors') );  use_errors = optval.use_errors;  end
+    if ( isfield(optval,'zindex') );  zindex = optval.zindex; end
+    if ( isfield(optval,'zval') );  zval = optval.zval;  end
+    if ( isfield(optval,'xoffset') );  xoffset = optval.xoffset; end
+    if ( isfield(optval,'yoffset') );  yoffset = optval.yoffset;  end
+    if ( isfield(optval,'use_dm1') );  use_dm1 = optval.use_dm1;   end
+    if ( isfield(optval,'dm1') );  dm1 = optval.dm1;  end
+    if ( isfield(optval,'use_dm2') );  use_dm2 = optval.use_dm2;   end
+    if ( isfield(optval,'dm2') );  dm2 = optval.dm2;   end
+    if ( isfield(optval,'use_fpm') );  use_fpm = optval.use_fpm;   end
+    if ( isfield(optval,'use_lyot_stop') );  use_lyot_stop = optval.use_lyot_stop;  end
+    if ( isfield(optval,'use_field_stop') );  use_field_stop = optval.use_field_stop;  end
+    if ( isfield(optval,'field_stop_radius') );  field_stop_radius = optval.field_stop_radius;  end
+    if ( isfield(optval,'final_sampling_lam0') );  final_sampling_lam0 = optval.final_sampling_lam0;   end
+    if ( isfield(optval,'nout') );  nout = optval.nout;   end
+    if ( isfield(optval,'normLyotDiam') );  normLyotDiam = optval.normLyotDiam; end
+    if ( isfield(optval,'vortexCharge') );  vortexCharge = optval.vortexCharge;end
+    if ( isfield(optval,'map_dir') );  map_dir = optval.map_dir;  end
+    if ( isfield(optval,'pupil_diam_pix') );  pupil_diam_pix = optval.pupil_diam_pix; end
+    if ( isfield(optval,'pr_pupil_diam_pix') );  pr_pupil_diam_pix = optval.pr_pupil_diam_pix;  end
+    if ( isfield(optval,'use_pr') );  use_pr = optval.use_pr;  end
 end
 pr_pupil_diam_pix = pupil_diam_pix; %-- define sampling of pupil used for flattening phase with the DMs
 
@@ -228,13 +228,13 @@ if(use_dm1)
     % Increments global varaible use_dm1_count by 1
     use_dm1_count = use_dm1_count + 1;
     
-    figure(38301);
-    imagesc(dm1);
-    colorbar;
-    axis equal; axis tight;
+    %figure(38301);
+    %imagesc(dm1);
+    %colorbar;
+    %axis equal; axis tight;
     %title({'DM1 Actuator Surface Height in Meters.',[' DM1 Use ' num2str(use_dm1_count) '']});
-    title('DM1 Actuator Surface Height in Meters.');
-    set(gca,'fontsize',16);
+    %title('DM1 Actuator Surface Height in Meters.');
+    %set(gca,'fontsize',16);
     
     
     wavefront = prop_dm(wavefront, dm1, dm_xc, dm_yc, dm_sampling);
@@ -248,12 +248,12 @@ wavefront = prop_propagate(wavefront, d_dm1_dm2, 'SURFACE_NAME', 'DM2');
 
 % APPPLY DM2
 if(use_dm2)
-    figure;
-    imagesc(dm2);
-    colorbar;
-    axis equal; axis tight;
-    title('DM1 Commanded Actuator Surface Height in (m)');
-    set(gca,'fontsize',16);
+    %figure;
+    %imagesc(dm2);
+    %colorbar;
+    %axis equal; axis tight;
+    %title('DM1 Commanded Actuator Surface Height in (m)');
+    %set(gca,'fontsize',16);
     wavefront = prop_dm(wavefront, dm2, dm_xc, dm_yc, dm_sampling);
 end
 
@@ -314,7 +314,7 @@ if(use_pr == false)
     
     % APPLY THE CIRCULAR APERTURE TO APPLY THE LYOT STOP
     if(use_lyot_stop)
-        wavefront = prop_circular_aperture(wavefront, normLyotDiam, 'NORM'); 
+        wavefront = prop_circular_aperture(wavefront, normLyotDiam, 'NORM');
     end
     
     % PROPAGATES TO OAP MIRROR 8 WHICH FOCUS THE LIGHT
@@ -331,7 +331,7 @@ if(use_pr == false)
     % APPLIES THE FIELD STOP
     if(use_field_stop)
         r_stop = field_stop_radius * lambda0_m / lambda_m;
-    
+        
         wavefront = prop_circular_aperture(wavefront, r_stop/pupil_ratio*prop_get_sampling(wavefront));
     end
     
@@ -365,12 +365,19 @@ if(use_pr == false)
     % PROPAGATES TO THE FOCAL PLANE ARRAY
     wavefront = prop_propagate(wavefront, prop_get_distancetofocus(wavefront), 'SURFACE_NAME', 'CCD');
     
+    
+    
+    
+    
     % ENDS THE SIMULATION
     [wavefront, sampling_m] = prop_end(wavefront, 'noabs');
     
     %-- rescale to "final_sampling_lam0" lam0/D per pixel
     mag = (pupil_ratio / final_sampling_lam0) * (lambda_m / lambda0_m);
     wavefront = prop_magnify(wavefront, mag, 'SIZE_OUT', nout, 'AMP_CONSERVE');
+    
+    
+   
     
 else % Get E-field at pupil preceding the FPM
     EpupBeforeFPM = ifftshift(ifft2(wavefront.wf))*gridsize; % IFFT to previous pupil
