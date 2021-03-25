@@ -23,12 +23,14 @@ clear all;
 
 %--Required packages are FALCO and PROPER. 
 % Add FALCO to the MATLAB path with the command:  addpath(genpath(full_path_to_falco)); savepath;
+addpath(genpath('/Users/poon/Documents/DST/proper-models/simple_habex/falco-matlab'))
+
 % Add PROPER to the MATLAB path with the command:  addpath(full_path_to_proper); savepath;
 
 %%--Output Data Directories (Comment these lines out to use defaults within falco-matlab/data/ directory.)
-% mp.path.config = ; %--Location of config files and minimal output files. Default is [mp.path.falco filesep 'data' filesep 'brief' filesep]
-% mp.path.ws = ; % (Mostly) complete workspace from end of trial. Default is [mp.path.falco filesep 'data' filesep 'ws' filesep];
-% mp.flagSaveWS = false;  %--Whether to save out entire (large) workspace at the end of trial. Default is false
+mp.path.config = '/Users/poon/Documents/dst/proper-models/simple_habex/data/config/'; %--Location of config files and minimal output files. Default is [mp.path.falco filesep 'data' filesep 'brief' filesep]
+mp.path.ws = '/Users/poon/Documents/dst/proper-models/simple_habex/data/'; % (Mostly) complete workspace from end of trial. Default is [mp.path.falco filesep 'data' filesep 'ws' filesep];
+mp.flagSaveWS = false;  %--Whether to save out entire (large) workspace at the end of trial. Default is false
 
 
 %% Step 2: Load default model parameters
@@ -39,7 +41,7 @@ falco_defaults_Habex_VC
 %% Step 3: Overwrite default values as desired
 
 %%--Special Computational Settings
-mp.flagParfor = true; %--whether to use parfor for Jacobian calculation
+mp.flagParfor = false; %--whether to use parfor for Jacobian calculation
 mp.flagPlot = true;
 
 %--Record Keeping
