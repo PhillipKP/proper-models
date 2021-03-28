@@ -27,8 +27,11 @@
 
 function DMsurf = falco_gen_dm_surf(dm,dx,N)
 
+global phill_gen_dm_surf_count;
+
 %--Set the order of operations
 orderOfOps = 'XYZ';
+
 if(isfield(dm,'flagZYX'))
     if(dm.flagZYX)
         orderOfOps = 'ZYX'; 
@@ -74,7 +77,31 @@ else
 end
 
 %--Generate the DM surface
-[~,DMsurf] = propcustom_dm(bm, H, dm.xc-cshift, dm.yc-cshift, dm.dm_spacing,'XTILT',dm.xtilt,'YTILT',dm.ytilt,'ZTILT',dm.zrot,orderOfOps,...
-    'inf_sign',dm.inf_sign, 'inf_fn', dm.inf_fn);
+disp(['Center of beam in x in units of actuator number: ' num2str(dm.xc-cshift) ''])
+disp(['Center of beam in y in units of actuator number: ' num2str(dm.xc-cshift) ''])
+disp(['DM Spacing in units of meters: ' num2str(dm.dm_spacing) ''])
+disp(['Tilt of DM in X: ' num2str(dm.xtilt) ''])
+disp(['Tilt of DM in Y: ' num2str(dm.ytilt) ''])
+disp(['Tilt of DM in Z: ' num2str(dm.zrot) ''])
+disp(['DM Order of Operations: ' num2str(orderOfOps) ''])
+disp(['DM Influence Sign: ' num2str(dm.inf_sign) ''])
+disp(['DM Influence Function FITs file: ' dm.inf_fn ''])
+
+
+[~,DMsurf] = propcustom_dm(bm, H, dm.xc-cshift, dm.yc-cshift, ...
+    dm.dm_spacing,'XTILT',dm.xtilt,'YTILT',dm.ytilt,'ZTILT', ...
+    dm.zrot, orderOfOps, 'inf_sign',dm.inf_sign, 'inf_fn', dm.inf_fn);
+
+
+%-- Added by Phillip
+dbstack
+sum(abs(DMsurf(:)))
+phill_gen_dm_surf_count = phill_gen_dm_surf_count + 1
+disp(['falco_gen_dm_surf() has been called. ',...
+    num2str(phill_gen_dm_surf_count) ' times. Press continue'])
+
+
+poop = 1;
+
 
 end %--END OF FUNCTION

@@ -19,6 +19,12 @@
 
 clear all;
 
+global phill_gen_dm_surf_count;
+
+phill_gen_dm_surf_count = 0;
+
+
+
 %% Step 1: Define Necessary Paths on Your Computer System
 
 %--Required packages are FALCO and PROPER. 
@@ -94,8 +100,8 @@ for si=1:mp.Nsbp
 
     [fldFull, ~] = prop_run(prescription, lambda_um, nout, 'quiet', 'passvalue', optval);
     if(mp.flagPlot)
-        figure(605); imagesc(angle(fldFull)); axis xy equal tight; colorbar; colormap hsv; drawnow;
-        figure(606); imagesc(abs(fldFull)); axis xy equal tight; colorbar; colormap parula; drawnow;
+        figure(605); imagesc(angle(fldFull)); axis xy equal tight; colorbar; colormap hsv; title('Pupil Phase'); drawnow; 
+        figure(606); imagesc(abs(fldFull)); axis xy equal tight; colorbar; colormap parula; title('Pupil Magnitude'); drawnow;
     end
 
     %lams = num2str(lambda_um, '%6.4f');
@@ -114,14 +120,17 @@ for si=1:mp.Nsbp
     fldC = interp2(Xf, Yf, fldFull, Xc, Yc, 'cubic', 0); %--Downsample by interpolation
     %fldC = pad_crop(fldC, ceil_even(mp.P1.compact.Nbeam+1));
     if(mp.flagPlot)
-        figure(607+si-1); imagesc(angle(fldC)); axis xy equal tight; colorbar; colormap hsv; drawnow;
-        figure(608); imagesc(abs(fldC)); axis xy equal tight; colorbar; colormap parula; drawnow;
+        figure(607+si-1); imagesc(angle(fldC)); axis xy equal tight; colorbar; colormap hsv; drawnow; title('Downsampled Pupil Phase');
+        figure(608); imagesc(abs(fldC)); axis xy equal tight; colorbar; colormap parula; drawnow; title('Downsampled Pupil Magnitude');
     end
 
     %--Assign to initial E-field in compact model.
 %     temp = 0*fldC;
 %     temp(2:end,2:end) = rot90(fldC(2:end,2:end),2);
 %     mp.P1.compact.E(:,:,si) = temp;
+
+    % Performs a 180 degree rotation to put it back to the entrance pupil
+    % aka pupil plane 1 aka P1
     mp.P1.compact.E(:,:,si) = propcustom_relay(fldC, 1);
     
 end
