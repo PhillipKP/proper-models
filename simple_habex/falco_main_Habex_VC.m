@@ -90,7 +90,13 @@ end
 
 prescription = 'habex';
 
-%--Get the Input Pupil's E-field
+%--Get the Input Pupil's E-field. 
+% Uses PROPER to propagate to the FPM, 
+% The PROPER simulation 'habex.m' folds in all of the optics error maps before 
+% the FPM, then propagates to the pupil plane before the mask. 
+
+
+
 Nf = nout; %--N full
 Nc = ceil_even( (mp.P1.compact.Nbeam/mp.P1.full.Nbeam)*Nf ); %--N compact
 mp.P1.compact.E = ones(Nc, Nc, mp.Nsbp); %--Initialize
@@ -135,6 +141,8 @@ for si=1:mp.Nsbp
     
 end
 
+%mp.P1.compact = rmfield(mp.P1.compact,'E');
+disp('')
 
 %%
 
