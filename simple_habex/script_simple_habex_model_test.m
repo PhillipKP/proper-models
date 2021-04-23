@@ -34,8 +34,10 @@ NbeamFull = 62*7;
 optval.pupil_diam_pix = NbeamFull;
 gridsize = 2^ceil(log2(NbeamFull)); 
 
-optval.map_dir = '/Users/ajriggs/Documents/habex/maps/';	%-- directory containing optical surface error maps
-optval.map_dir = '/Users/poon/Documents/DST/proper-models/simple_habex/maps/';	%-- directory containing optical surface error maps
+%optval.map_dir = '/Users/ajriggs/Documents/habex/maps/';	%-- directory containing optical surface error maps
+%optval.map_dir = '/Users/poon/Documents/DST/proper-models/simple_habex/maps/';	%-- directory containing optical surface error maps
+optval.map_dir = 'C:\Users\poon\Documents\dst_sim\proper-models\simple_habex\map_dir\'; 
+
 
 optval.normLyotDiam = 0.95;
 optval.vortexCharge = 6;
