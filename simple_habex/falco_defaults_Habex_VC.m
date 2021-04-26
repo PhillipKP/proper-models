@@ -35,7 +35,7 @@ mp.source_y_offset_norm = 0;  % y location [lambda_c/D] in dark hole at which to
 
 mp.lambda0 = 550e-9;    %--Central wavelength of the whole spectral bandpass [meters]
 mp.fracBW = 0.10;       %--fractional bandwidth of the whole bandpass (Delta lambda / lambda0)
-mp.Nsbp = 5;            %--Number of sub-bandpasses to divide the whole bandpass into for estimation and control
+mp.Nsbp = 1;            %--Number of sub-bandpasses to divide the whole bandpass into for estimation and control
 mp.Nwpsbp = 1;          %--Number of wavelengths to used to approximate an image in each sub-bandpass
 
 %% Wavefront Estimation
@@ -99,7 +99,7 @@ mp.controller = 'gridsearchEFC';
 
 % % % GRID SEARCH EFC DEFAULTS     
 %--WFSC Iterations and Control Matrix Relinearization
-mp.Nitr = 5; %--Number of estimation+control iterations to perform
+mp.Nitr = 2; %--Number of estimation+control iterations to perform
 mp.relinItrVec = 1; %1:mp.Nitr;  %--Which correction iterations at which to re-compute the control Jacobian
 mp.dm_ind = [1 2]; %--Which DMs to use
 
