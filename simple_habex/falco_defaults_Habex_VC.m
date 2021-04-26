@@ -207,7 +207,7 @@ mp.full.flagPROPER = true; %--Whether the full model is a PROPER prescription
 mp.full.prescription = 'habex';
 mp.full.cor_type = 'vortex'; 
 %mp.full.map_dir = '/Users/ajriggs/Documents/habex/maps/';	%-- directory containing optical surface error maps
-mp.full.map_dir = 'C:\Users\poon\Documents\dst_sim\proper-models\simple_habex\map_dir\'
+mp.full.map_dir = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/maps_dir/'
 mp.full.gridsize = 1024; % # of points across in PROPER model 
 
 %--Focal planes
