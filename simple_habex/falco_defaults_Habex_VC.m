@@ -151,6 +151,19 @@ mp.d_P2_dm1 = 0;        % distance (along +z axis) from P2 pupil to DM1 [meters]
 mp.d_dm1_dm2 = 0.32;   % distance between DM1 and DM2 [meters]
 
 
+%% Deformable Mirrors: DM Errors
+
+%mp.dm1.Vmin = -10  % See what falco_enforce_dm_constraints does with this
+%mp.dm1.Vmax = 12
+
+%mp.dm1.Vmin = -10
+%mp.dm1.Vmax = 12
+
+
+mp.dm1.pinned = [2016]; % Set the indices of the pinned actuators on dm 1
+mp.dm1.Vpinned = [6.66]; %These voltages correspond to the actuator indices above
+
+
 %% Optical Layout: All models
 
 %--Key Optical Layout Choices
