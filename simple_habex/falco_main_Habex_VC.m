@@ -19,6 +19,16 @@
 
 clear
 
+%global falco_est_perfect_Efield_with_Zernikes_count
+%global falco_get_summed_image_count 
+global falco_get_sim_sbp_image_count
+
+
+%falco_est_perfect_Efield_with_Zernikes_count = 1
+%falco_get_summed_image_count = 1
+falco_get_sim_sbp_image_count = 1
+
+
 %% Step 1: Define Necessary Paths on Your Computer System
 
 %--Required packages are FALCO and PROPER. 
@@ -54,7 +64,8 @@ mp.TrialNum = 1;
 
 %--DEBUGGING
 mp.fracBW = 0.01;       %--fractional bandwidth of the whole bandpass (Delta lambda / lambda0)
-mp.Nsbp = 1;            %--Number of sub-bandpasses to divide the whole bandpass into for estimation and control
+mp.Nsbp = 3;            %--Number of sub-bandpasses to divide the whole bandpass into for estimation and control
+mp.Nwpsbp = 2;
 mp.flagParfor = false; %--whether to use parfor for Jacobian calculation
 
 %% Step 3b: Obtain the phase retrieval phase.
