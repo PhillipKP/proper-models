@@ -16,8 +16,15 @@
 % In falco_defaults_Habex_VC.m, change the value of mp.full.map_dir to be
 % for your computer.
 % -------------------------------------------------------------------------
-
 clear
+
+global model_full_count 
+global falco_compute_psf_norm_factor_count 
+
+model_full_count = 1
+falco_compute_psf_norm_factor_count = 1
+
+
 
 %% Step 1: Define Necessary Paths on Your Computer System
 
@@ -54,7 +61,8 @@ mp.TrialNum = 1;
 
 %--DEBUGGING
 mp.fracBW = 0.01;       %--fractional bandwidth of the whole bandpass (Delta lambda / lambda0)
-mp.Nsbp = 1;            %--Number of sub-bandpasses to divide the whole bandpass into for estimation and control
+mp.Nsbp = 3;            %--Number of sub-bandpasses to divide the whole bandpass into for estimation and control
+mp.Nwpsbp = 2;
 mp.flagParfor = false; %--whether to use parfor for Jacobian calculation
 
 %% Step 3b: Obtain the phase retrieval phase.
@@ -144,7 +152,7 @@ end
 % mask(abs(Epup) > 1e-1*max(abs(Epup(:)))) = 1;
 % % mask = ones(size(Epup));
 % 
-% surfaceToFit = -0.5*mask.*angle(Epup)*(mp.lambda0/(2*pi));
+% surfaceToFit = -0.5*mask.*angle(Epup)*(mp.lambda0/(2*pi));x
 % 
 % figure(1); imagesc(abs(Epup)); axis xy equal tight; colorbar; 
 % % title('', 'Fontsize', 16);
