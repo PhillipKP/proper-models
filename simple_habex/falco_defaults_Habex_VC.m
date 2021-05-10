@@ -160,9 +160,14 @@ mp.d_dm1_dm2 = 0.32;   % distance between DM1 and DM2 [meters]
 %mp.dm1.Vmax = 12
 
 
-mp.dm1.pinned = [2016]; % Set the indices of the pinned actuators on dm 1
-mp.dm1.Vpinned = [6.66]; %These voltages correspond to the actuator indices above
+% NEW CODE: List which actuators should be constant USE sub2ind to go from
+% 2D to 1D indices
+mp.dm1.pinned = [2016 2530]; % Set the indices of the pinned actuators on dm 1
+mp.dm1.Vpinned = [0 100]; %These voltages correspond to the actuator indices above
 
+% NEW CODE:
+mp.dm1.weak = [1886]
+mp.dm1.VtoHweak = [.1e-9]
 
 %% Optical Layout: All models
 
@@ -220,7 +225,8 @@ mp.full.flagPROPER = true; %--Whether the full model is a PROPER prescription
 mp.full.prescription = 'habex';
 mp.full.cor_type = 'vortex'; 
 %mp.full.map_dir = '/Users/ajriggs/Documents/habex/maps/';	%-- directory containing optical surface error maps
-mp.full.map_dir = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/maps_dir/'
+%mp.full.map_dir = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/maps_dir/'
+mp.full.map_dir = 'C:\Users\poon\Documents\dst_sim\proper-models\simple_habex\maps\'
 mp.full.gridsize = 1024; % # of points across in PROPER model 
 
 %--Focal planes
