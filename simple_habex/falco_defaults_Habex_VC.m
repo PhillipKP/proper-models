@@ -151,6 +151,12 @@ mp.d_P2_dm1 = 0;        % distance (along +z axis) from P2 pupil to DM1 [meters]
 mp.d_dm1_dm2 = 0.32;   % distance between DM1 and DM2 [meters]
 
 
+%--DM Pinned, Railed, and Stuck Actuators
+mp.dm1.pinned = []
+
+mp.dm1.Vpinned = [] %--(Fixed) relative voltage commands of pinned/railed actuators
+
+
 %% Optical Layout: All models
 
 %--Key Optical Layout Choices
