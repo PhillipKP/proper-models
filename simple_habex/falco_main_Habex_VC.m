@@ -18,12 +18,14 @@
 % -------------------------------------------------------------------------
 clear
 
-global model_full_count 
-global falco_compute_psf_norm_factor_count 
+%global falco_est_perfect_Efield_with_Zernikes_count
+%global falco_get_summed_image_count 
+global falco_get_sim_sbp_image_count
 
-model_full_count = 1
-falco_compute_psf_norm_factor_count = 1
 
+%falco_est_perfect_Efield_with_Zernikes_count = 1
+%falco_get_summed_image_count = 1
+falco_get_sim_sbp_image_count = 1
 
 
 %% Step 1: Define Necessary Paths on Your Computer System
