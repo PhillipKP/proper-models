@@ -26,8 +26,11 @@ clear
 
 %%--Output Data Directories (Comment these lines out to use defaults within falco-matlab/data/ directory.)
 % mp.path.config = ; %--Location of config files and minimal output files. Default is [mp.path.falco filesep 'data' filesep 'brief' filesep]
-% mp.path.ws = ; % (Mostly) complete workspace from end of trial. Default is [mp.path.falco filesep 'data' filesep 'ws' filesep];
-% mp.flagSaveWS = false;  %--Whether to save out entire (large) workspace at the end of trial. Default is false
+
+% MACBOOK PRO
+mp.path.ws = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/workspaces/'; % (Mostly) complete workspace from end of trial. Default is [mp.path.falco filesep 'data' filesep 'ws' filesep];
+
+mp.flagSaveWS = true;  %--Whether to save out entire (large) workspace at the end of trial. Default is false
 
 
 %% Step 2: Load default model parameters
@@ -36,6 +39,7 @@ falco_defaults_Habex_VC
 
 
 %% Step 3: Overwrite default values as desired
+
 
 %%--Special Computational Settings
 mp.flagParfor = true; %--whether to use parfor for Jacobian calculation
