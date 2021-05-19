@@ -8,8 +8,8 @@
 %% Misc
 
 %--Record Keeping
-mp.SeriesNum = 867;
-mp.TrialNum = 5310;
+mp.SeriesNum = 867; %This will get overwritten
+mp.TrialNum = 5310; %This will get overwritten
 
 %--Special Computational Settings
 mp.flagParfor = false;
@@ -99,7 +99,7 @@ mp.controller = 'gridsearchEFC';
 
 % % % GRID SEARCH EFC DEFAULTS     
 %--WFSC Iterations and Control Matrix Relinearization
-mp.Nitr = 5; %--Number of estimation+control iterations to perform
+mp.Nitr = 1; %--Number of estimation+control iterations to perform
 mp.relinItrVec = 1:mp.Nitr;  %--Which correction iterations at which to re-compute the control Jacobian
 mp.dm_ind = [1 2]; %--Which DMs to use
 
@@ -162,8 +162,8 @@ mp.d_dm1_dm2 = 0.32;   % distance between DM1 and DM2 [meters]
 
 % NEW CODE: List which actuators should be constant USE sub2ind to go from
 % 2D to 1D indices NOTE IT NEEDS TO BE A COLUMN VECTOR
-mp.dm1.pinned =  [1     2016  2080 2144 2208 2272]; % Set the indices of the pinned actuators on dm 1
-mp.dm1.Vpinned = [10000 1001 100 100 100 100]; %These voltages correspond to the actuator indices above
+mp.dm1.pinned =  [2016  2080 2144 2208 2272]; % Set the indices of the pinned actuators on dm 1
+mp.dm1.Vpinned = [0     0    0    0    0   ]; %These voltages correspond to the actuator indices above
 
 
 % Check if the pinned actuators are outside the beam
@@ -190,8 +190,7 @@ if isfield(mp.dm2,'weak') && ismember(0,(ismember(mp.dm2.pinned,dm2_act_ele) ))
     disp('Warning some of the weak actuators in DM2 are outside the beam')
 end
 
-disp('Press any return to continue')
-pause
+
 
 %% Optical Layout: All models
 
