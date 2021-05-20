@@ -11,7 +11,7 @@ clearvars; clc; close all;
 % 4. Type inmem_list = inmem; save('inmem_list.mat','inmem_list')
 % 5. Run this script in the same folder where inmem_list.mat is
 % 6. Type the string you want to find
-stringToBeFound = 'mp.runLabel'
+stringToBeFound = ''
 
 
 load('inmem_list.mat','inmem_list');

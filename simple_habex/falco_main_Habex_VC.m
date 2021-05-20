@@ -16,8 +16,20 @@
 % In falco_defaults_Habex_VC.m, change the value of mp.full.map_dir to be
 % for your computer.
 % -------------------------------------------------------------------------
+%
+% Updated 19 Mar 2021 By Phillip K Poon
+% 
+% Changed from script to function so I can loop over this using
+% phil_sim_script.m
+%
+% Input arguments:
+% SeriesNum is an integer for naming the final *.mat file
+% TrialNum is an integer for naming the final *.mat file
+% dm1 and dm2 are structs which contains fields like .pinned and .Vpinned 
 
-function [mp, out] = falco_main_Habex_VC(SeriesNum, TrialNum)
+function [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2)
+
+
 
 %% Step 1: Define Necessary Paths on Your Computer System
 
@@ -35,7 +47,7 @@ mp.flagSaveWS = true;  %--Whether to save out entire (large) workspace at the en
 
 %% Step 2: Load default model parameters
 
-falco_defaults_Habex_VC
+[mp] = falco_defaults_Habex_VC(mp, Nitr, dm1, dm2)
 
 
 %% Step 3: Overwrite default values as desired
