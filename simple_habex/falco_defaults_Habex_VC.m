@@ -185,9 +185,11 @@ load('dm2_act_ele.mat','dm2_act_ele')
 
 if isfield(mp.dm1,'pinned') && ismember(0,(ismember(mp.dm1.pinned,dm1_act_ele) )) 
     disp('Warning some of the pinned actuators in DM1 are outside the beam')
+    beep;pause(1);beep;pause
 end
 if isfield(mp.dm2,'pinned') && ismember(0,(ismember(mp.dm2.pinned,dm2_act_ele) )) 
     disp('Warning some of the pinned actuators in DM2 are outside the beam')
+    beep;pause(1);beep;pause
 end
 
 
@@ -263,14 +265,18 @@ mp.full.cor_type = 'vortex';
 %mp.full.map_dir = '/Users/ajriggs/Documents/habex/maps/';	%-- directory containing optical surface error maps
 
 % 383 COMPUTERS
-%mp.full.map_dir = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/maps_dir/'
+if isunix && ~ismac
+    mp.full.map_dir = '/home/poon/dst_sim/proper-models/simple_habex/maps_dir/'
+end
 
 % WINDOWS PC
 %mp.full.map_dir = 'C:\Users\poon\Documents\dst_sim\proper-models\simple_habex\maps\'
 
 % MACBOOK PRO
-mp.full.map_dir = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/maps_dir/'
-
+if isunix && ismac
+    mp.full.map_dir = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/maps_dir/'
+end
+    
 mp.full.gridsize = 1024; % # of points across in PROPER model 
 
 %--Focal planes
@@ -287,7 +293,7 @@ mp.full.pupil_diam_pix = mp.P1.full.Nbeam;
 % mp.full.grid_size = mp.P1.full.Narr;
 
 mp.full.use_errors = true;
-mp.full.dm1.flatmap = fitsread([mp.full.map_dir, 'flat_map.fits']);
+mp.full.dm1.flatmap = fitsread([ mp.full.map_dir, 'flat_map.fits']);
 mp.full.dm2.flatmap = 0;
 
 

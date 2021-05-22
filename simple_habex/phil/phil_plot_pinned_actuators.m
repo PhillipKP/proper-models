@@ -1,4 +1,6 @@
-function [] = phil_plot_pinned_actuators(dm)
+function [] = phil_plot_pinned_actuators(dm,title_str)
+
+
 
 pinned = dm.pinned
 Vpinned = dm.Vpinned
@@ -11,9 +13,6 @@ color_stuck_act = 0.6
 
 
 V = color_normal_act*ones(64,64)
-
-% pinned = [2002 2000 2020]
-% Vpinned = [0 200 85]
 
 
 
@@ -63,7 +62,7 @@ imagesc(V, [0.0 1.0]);
 colorbar
 caxis([0.0 1.0])
 numCoins = length(unique(V))
-
+title(title_str)
 
 %Get a different color for each coin. Add one for background and skip it
 allColors = parula(numCoins + 1);
@@ -93,7 +92,7 @@ imlegend(allColors, labels_arr);
         %   Nx3 array of doubles. Each entry should be an RGB percentage value between 0 and 1
         %
         % labelsArr =
-        %   1×N cell array
+        %   1ï¿½N cell array
         %     {'First name here'}    {'Second name here'}    {'etc'}
         hold on;
         for ii = 1:length(labelsArr)

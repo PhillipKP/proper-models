@@ -34,13 +34,28 @@ function [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2)
 %% Step 1: Define Necessary Paths on Your Computer System
 
 %--Required packages are FALCO and PROPER.
-% Add FALCO to the MATLAB path with the command:  addpath(genpath(full_path_to_falco)); savepath;
+% Add FALCO to the MATLAB path with the command:  
+if isunix && ~(ismac)
+    full_path_to_falco = '/home/poon/dst_sim/falco-matlab';
+    addpath(genpath(full_path_to_falco)); savepath;
+end
+
 
 %%--Output Data Directories (Comment these lines out to use defaults within falco-matlab/data/ directory.)
 % mp.path.config = ; %--Location of config files and minimal output files. Default is [mp.path.falco filesep 'data' filesep 'brief' filesep]
 
-% MACBOOK PRO
-mp.path.ws = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/'; % (Mostly) complete workspace from end of trial. Default is [mp.path.falco filesep 'data' filesep 'ws' filesep];
+% Macbook Pro
+if isunix && ismac
+    mp.path.ws = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
+    % (Mostly) complete workspace from end of trial. Default is [mp.path.falco filesep 'data' filesep 'ws' filesep];
+end
+% On S383 Computers
+if isunix && ~(ismac)
+    mp.path.ws = '/home/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
+    
+end
+% s383 COMPUTERS
+
 
 mp.flagSaveWS = true;  %--Whether to save out entire (large) workspace at the end of trial. Default is false
 
