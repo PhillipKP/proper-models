@@ -154,6 +154,8 @@ mp.d_P2_dm1 = 0;        % distance (along +z axis) from P2 pupil to DM1 [meters]
 mp.d_dm1_dm2 = 0.32;   % distance between DM1 and DM2 [meters]
 
 
+
+
 %% Deformable Mirrors: DM Errors
 
 %mp.dm1.Vmin = -10  % See what f%alco_enforce_dm_constraints does with this
@@ -295,6 +297,7 @@ mp.full.pupil_diam_pix = mp.P1.full.Nbeam;
 mp.full.use_errors = true;
 mp.full.dm1.flatmap = fitsread([ mp.full.map_dir, 'flat_map.fits']);
 mp.full.dm2.flatmap = 0;
+
 
 
 %% Mask Definitions

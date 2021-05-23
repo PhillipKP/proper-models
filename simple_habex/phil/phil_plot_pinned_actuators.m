@@ -29,10 +29,10 @@ pinnedV = 0
 Vpinned_stuck_ind = find( (Vpinned < railedV) .* (Vpinned > 0) )
 
 % Indices of railed actuators in Vpinned
-Vpinned_railed_ind = find( (Vpinned == railedV) )
+Vpinned_railed_ind = find( (Vpinned >= railedV) )
 
 % Indices of pinned actuators in Vpinned
-Vpinned_pinned_ind = find( (Vpinned == pinnedV) )
+Vpinned_pinned_ind = find( (Vpinned <= pinnedV) )
 
 
 

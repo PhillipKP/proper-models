@@ -1,8 +1,8 @@
 % Phillip K Poon (383H)
 
 
-clearvars; clc; close all;
-
+%clearvars; clc; close all;
+function [] = search_for_text_inmem_list(stringToBeFound)
 
 % 1. You must type clear functions to clear all functions from memory
 % 2. Execute the script or function you want to check
@@ -11,8 +11,7 @@ clearvars; clc; close all;
 % 4. Type inmem_list = inmem; save('inmem_list.mat','inmem_list')
 % 5. Run this script in the same folder where inmem_list.mat is
 % 6. Type the string you want to find
-stringToBeFound = ''
-
+%stringToBeFound = 'biasMap'
 
 load('inmem_list.mat','inmem_list');
 
@@ -68,39 +67,39 @@ for file_ind = 1:number_of_files
     
     filename_from_new_list = proper_falco_only_list{file_ind,1};
     
-     
+    
     fid = fopen(which(filename_from_new_list));
-     
-     
-     while(~feof(fid))                                           % Execute till EOF has been reached
-         
-         contentOfFile = fgetl(fid);                             % Read the file line-by-line and store the content
-         
-         found = strfind(contentOfFile,stringToBeFound);         % Search for the stringToBeFound in contentOfFile
-         
-         if ~isempty(found)
-             
-             %foundString = strcat('Found in file------', filename_from_new_list);
-             
-             %disp(foundString);
-             
-             list_of_files_with_str_in_it{counter2,1} = filename_from_new_list;
-             
-             counter2 = counter2 + 1;
-             
-             break;
-             
-         end
-         
-     end
-     
-     fclose(fid);
+    
+    
+    while(~feof(fid))                                           % Execute till EOF has been reached
+        
+        contentOfFile = fgetl(fid);                             % Read the file line-by-line and store the content
+        
+        found = strfind(contentOfFile,stringToBeFound);         % Search for the stringToBeFound in contentOfFile
+        
+        if ~isempty(found)
+            
+            %foundString = strcat('Found in file------', filename_from_new_list);
+            
+            %disp(foundString);
+            
+            list_of_files_with_str_in_it{counter2,1} = filename_from_new_list;
+            
+            counter2 = counter2 + 1;
+            
+            break;
+            
+        end
+        
+    end
+    
+    fclose(fid);
     
 end
 
 
 for fi = 1:length(list_of_files_with_str_in_it)
-   
+    
     filename = list_of_files_with_str_in_it{fi,1};
     filename = [filename '.m'];
     
@@ -109,8 +108,9 @@ for fi = 1:length(list_of_files_with_str_in_it)
     line_nums_matched = find_line_nums_in_file(filename,stringToBeFound);
     
     for lni = line_nums_matched
-       jumptoline(filename,lni,'concise') 
+        jumptoline(filename,lni,'concise')
     end
     
 end
 
+end
