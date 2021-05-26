@@ -165,17 +165,11 @@ mp.d_dm1_dm2 = 0.32;   % distance between DM1 and DM2 [meters]
 %mp.dm1.Vmax = 12
 
 
-% NEW CODE: List which actuators should be constant USE sub2ind to go from
-% 2D to 1D indices NOTE IT NEEDS TO BE A COLUMN VECTOR
-%mp.dm1.pinned =  [2016  2080 2144 2208 2272]; % Set the indices of the pinned actuators on dm 1
-%mp.dm1.Vpinned = [0     0    0    0    0   ]; %These voltages correspond to the actuator indices above
+mp.dm1.pinned = dm1.pinned;
+mp.dm1.Vpinned = dm1.Vpinned;
 
-
-mp.dm1.pinned = dm1.pinned
-mp.dm1.Vpinned = dm1.Vpinned
-
-mp.dm2.pinned = dm2.pinned
-mp.dm2.Vpinned = dm2.pinned
+mp.dm2.pinned = dm2.pinned;
+mp.dm2.Vpinned = dm2.Vpinned;
 
 
 

@@ -9,7 +9,7 @@ Vpinned = dm.Vpinned
 color_normal_act = 0.0
 color_pinned_act = 0.2
 color_railed_act = 0.9
-color_stuck_act = 0.6
+color_stuck_act = 0.75
 
 
 V = color_normal_act*ones(64,64)
@@ -34,7 +34,7 @@ Vpinned_railed_ind = find( (Vpinned >= railedV) )
 % Indices of pinned actuators in Vpinned
 Vpinned_pinned_ind = find( (Vpinned <= pinnedV) )
 
-
+mp
 
 
 stuck_act_ind = pinned(Vpinned_stuck_ind)
