@@ -1,8 +1,12 @@
 Nitr = 5
 Ntrials = 100
 
-addpath('/home/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/')
-
+if isunix && ~ismac
+    addpath('/home/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/')
+elseif ismac
+    addpath('/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/')
+end
+    
 clear ni_temp;
 ni_temp = [];
 for trial = 1:Ntrials
