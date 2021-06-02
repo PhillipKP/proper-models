@@ -292,7 +292,31 @@ mp.full.use_errors = true;
 mp.full.dm1.flatmap = fitsread([ mp.full.map_dir, 'flat_map.fits']);
 mp.full.dm2.flatmap = 0;
 
+%% Initialize the biasmap which is the flatmap converted to voltage
 
+mp.dm1.biasMap = mp.full.dm1.flatmap ./ mp.dm1.VtoH;
+mp.dm2.biasMap = mp.full.dm2.flatmap ./ mp.dm2.VtoH;
+
+figure;
+subplot(1,2,1)
+imagesc(mp.dm1.biasMap)
+title('mp.dm1.biasMap (Volts)')
+xlabel('Horizontal Actuators')
+ylabel('Vertical Actuators')
+axis equal; axis tight;
+colorbar;
+set(gca,'fontsize',16)
+
+subplot(1,2,2)
+imagesc(mp.dm2.biasMap)
+title('mp.dm2.biasMap  (Volts)')
+xlabel('Horizontal Actuators')
+ylabel('Vertical Actuators')
+axis equal; axis tight;
+colorbar;
+set(gca,'fontsize',16)
+
+set(gcf,'position',[ 3146         358        1292         529])
 
 %% Mask Definitions
 
