@@ -19,7 +19,7 @@ V = color_normal_act*ones(64,64)
 %User inputs:
 
 % The voltage in which the actuator is considered railed
-railedV = 200;
+railedV = 1000;
 
 % The voltage in which the actuator is considered pinned
 pinnedV = 0
@@ -34,7 +34,7 @@ Vpinned_railed_ind = find( (Vpinned >= railedV) )
 % Indices of pinned actuators in Vpinned
 Vpinned_pinned_ind = find( (Vpinned <= pinnedV) )
 
-mp
+
 
 
 stuck_act_ind = pinned(Vpinned_stuck_ind)

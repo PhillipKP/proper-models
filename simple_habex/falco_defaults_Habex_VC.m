@@ -297,6 +297,9 @@ mp.full.dm2.flatmap = 0;
 mp.dm1.biasMap = mp.full.dm1.flatmap ./ mp.dm1.VtoH;
 mp.dm2.biasMap = mp.full.dm2.flatmap ./ mp.dm2.VtoH;
 
+
+
+
 figure;
 subplot(1,2,1)
 imagesc(mp.dm1.biasMap)
@@ -317,6 +320,13 @@ colorbar;
 set(gca,'fontsize',16)
 
 set(gcf,'position',[ 3146         358        1292         529])
+
+%% Enforcement of stuck, pinned, or railed actuators
+
+% enforces the voltage values on the 
+mp.dm1.enforce_absolute_voltage = false;
+mp.dm2.enforce_absolute_voltage = false;
+
 
 %% Mask Definitions
 

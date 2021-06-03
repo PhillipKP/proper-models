@@ -70,7 +70,7 @@ mp.flagSaveWS = true;  %--Whether to save out entire (large) workspace at the en
 
 %%--Special Computational Settings
 mp.flagParfor = true; %--whether to use parfor for Jacobian calculation
-mp.flagPlot = false; % 
+mp.flagPlot = true; % 
 
 %--Record Keeping
 mp.SeriesNum = SeriesNum;

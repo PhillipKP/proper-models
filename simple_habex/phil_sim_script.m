@@ -13,7 +13,7 @@ num_trials = 1
 %- FALCO specific variables
 
 % Number of WFSC loops to run each trial
-Nitr = 1
+Nitr = 5
 
 
 %- The following variables are used in the random stuck actuator generator
@@ -44,7 +44,7 @@ addpath(path_to_phil)
 
 
 
-for TrialNum = 1:num_trials
+for TrialNum = 2
  
     
     [dm1, dm2] = phil_gen_stuck_acts(Nact, num_stuck_in_row, ...
