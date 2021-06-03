@@ -5,7 +5,7 @@ clearvars
 %- The following variables are for monte carlo simulations
 
 % The series number to save the mat files under
-SeriesNum = 002;
+SeriesNum = 000;
 % Number of random trials to run in this series
 num_trials = 1
 

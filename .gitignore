@@ -4,6 +4,9 @@ wfirst_cgi/models_phaseb/python/wfirst_phaseb_proper.egg-info/**
 wfirst_cgi/models_phaseb/python/build/lib/**
 wfirst_cgi/models_phaseb/python/dist/**
 
+## Ignore files with the word scrap in it
+scrap*.*
+
 ## Compiled python
 *.pyc
 
