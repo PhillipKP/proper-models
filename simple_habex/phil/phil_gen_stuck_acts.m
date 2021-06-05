@@ -1,6 +1,6 @@
 
-function [dm1,dm2] = phil_gen_stuck_acts(Nact, num_stuck_in_row, ...
-    num_isolated_acts, allincol, bool_figson)
+function [dm] = phil_gen_stuck_acts(Nact, num_stuck_in_row, ...
+    num_isolated_acts, allincol, bool_figson, dm_num)
 
 % Inputs:
 % Nact: Number of actuators in a row and column of the DM.
@@ -15,19 +15,17 @@ function [dm1,dm2] = phil_gen_stuck_acts(Nact, num_stuck_in_row, ...
 
 %- Load the actuators in the beam. This data is generated from the
 % falco_cull_weak_actuators
-[dm1_act_mask,dm1_act_ind_in_beam, dm2_act_mask, ~] = ...
-    phil_gen_actuators_in_beam(Nact, bool_figson);
 
+
+[dm_act_mask,dm_act_ind_in_beam] = phil_gen_actuators_in_beam(Nact, bool_figson, dm_num);
 
 loop_flag = true;
 
 
 % Starts with a blank array
-dm1.pinned = [];
-dm1.Vpinned = [];
+dm.pinned = [];
+dm.Vpinned = [];
 
-dm2.pinned = [];
-dm2.Vpinned = [];
 
 if (num_stuck_in_row > 0) || (num_isolated_acts > 0)
     
@@ -41,8 +39,8 @@ if (num_stuck_in_row > 0) || (num_isolated_acts > 0)
                 allincol );
             
             % Assign the indices to dm1.pinned
-            dm1.pinned = dmm_ind;
-            dm1.Vpinned = zeros(size(dmm_ind));
+            dm.pinned = dmm_ind;
+            dm.Vpinned = zeros(size(dmm_ind));
             
         end
         
@@ -52,26 +50,24 @@ if (num_stuck_in_row > 0) || (num_isolated_acts > 0)
             % Check if all the pinned actuators are actually inside the beam
             % If they are it will stop looping
             
-            msize = numel(dm1_act_ind_in_beam);
-            iso_act_ind = dm1_act_ind_in_beam(randperm(msize, num_isolated_acts));
+            msize = numel(dm_act_ind_in_beam);
+            iso_act_ind = dm_act_ind_in_beam(randperm(msize, num_isolated_acts));
             
-            if all( ismember(iso_act_ind, dm1_act_ind_in_beam) )
+            if all( ismember(iso_act_ind, dm_act_ind_in_beam) )
                 
-                dm1.pinned  = [ dm1.pinned; iso_act_ind ];
-                dm1.Vpinned = [ dm1.Vpinned; zeros([num_isolated_acts 1]) ];
+                dm.pinned  = [ dm.pinned; iso_act_ind ];
+                dm.Vpinned = [ dm.Vpinned; zeros([num_isolated_acts 1]) ];
                 
-                dm1_act_mask(dm1.pinned) = dm1.Vpinned;
+                dm_act_mask(dm.pinned) = dm.Vpinned;
                 
                 if bool_figson
                     figure;
-                    subplot(1,2,1)
-                    imagesc(reshape(dm1_act_mask, [Nact Nact]));
+                    imagesc(reshape(dm_act_mask, [Nact Nact]));
                     axis equal; axis tight;
-                    title('DM1 Pinned Acts in Beam');
-                    subplot(1,2,2)
-                    imagesc(reshape(dm2_act_mask, [Nact Nact]));
-                    axis equal; axis tight;
-                    title('DM2 Pinned Acts in Beam');
+                    
+                    
+                    title(['DM', num2str(dm_num), ' Pinned Acts in Beam']);
+ 
                 end
                 
                 loop_flag = false;
@@ -87,11 +83,9 @@ if (num_stuck_in_row > 0) || (num_isolated_acts > 0)
 end
 
 % Transpose to be consistent with FALCO
-dm1.pinned = transpose( dm1.pinned );
-dm1.Vpinned = transpose( dm1.Vpinned );
+dm.pinned = transpose( dm.pinned );
+dm.Vpinned = transpose( dm.Vpinned );
 
-dm2.pinned = transpose( dm2.pinned );
-dm2.Vpinned = transpose( dm2.Vpinned );
 
 
 end
