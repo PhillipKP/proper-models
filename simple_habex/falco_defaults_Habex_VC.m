@@ -321,11 +321,11 @@ set(gca,'fontsize',16)
 
 set(gcf,'position',[ 3146         358        1292         529])
 
-%% Enforcement of stuck, pinned, or railed actuators
+%% Enforcement of stuck, pinned, or railed actuators in full
 
 % enforces the voltage values on the 
-mp.dm1.enforce_absolute_voltage = false;
-mp.dm2.enforce_absolute_voltage = false;
+mp.dm1.enforce_absolute_voltage = true;
+mp.dm2.enforce_absolute_voltage = true;
 
 
 %% Mask Definitions

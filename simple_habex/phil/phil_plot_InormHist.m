@@ -28,6 +28,11 @@ disp(out.InormHist.')
 
 nargin
 
+% Default is no title
+title_flag = false;
+% Default is not to tsave
+save_flag = false;
+
 for icav = 1:length(varargin)
     
     arg_name = varargin{icav}
@@ -43,8 +48,7 @@ for icav = 1:length(varargin)
                 if ischar(  varargin{icav + 1})
                     ts = varargin{icav + 1};
                     title_flag = true;
-                else
-                    error('Title must be a char class')
+
                 end
                 
                 
@@ -82,19 +86,27 @@ end
 
 
 
-semilogy(out.InormHist,'-o','linewidth',3);
+semilogy(0:mp.Nitr, out.InormHist,'-o','linewidth',3);
 grid on;
 
 xticks([1:out.Nitr]);
-xlabel('WFSC Iteration');
+xlabel({'WFSC Iteration',mp.runLabel(1:20)}, 'interpreter', 'none');
 
 %ylim([1e-10 1e-5])
 ylabel('Mean NI');
 
 
+xlim([0 mp.Nitr-1])
+ylim([1e-11 1e-5 ])
+
+yticks([ 1e-11 1e-10 1e-9 1e-8 1e-7 1e-6 1e-5])
+
 % Sets the title
-if title_flag; title(ts); end
-    
+if title_flag; 
+    title(ts); 
+end
+
+% Change the fontsize of everything
 set(gca,'fontsize',16);
 
 % Saves as a png
