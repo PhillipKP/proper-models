@@ -7,6 +7,8 @@ file_postfix = '_vortex_simple_2DM64_z0.32_IWA2_OWA26_1lams550nm_BW1_gridsearchE
 
 if (~ismac) && (isunix)
     path_to_ws = '/home/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
+elseif (ismac)
+    path_to_ws = '/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
 end
 
 % The full file path
