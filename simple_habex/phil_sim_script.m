@@ -14,32 +14,36 @@ Nact = 64
 
 %% The following variables are used in the random stuck actuator generator
 
-% Number of actuators stuck in a column or a row
-dm1_num_stuck_in_row = 0
-dm2_num_stuck_in_row = 0
+% Number of actuators pinned in a column or a row
+dm1_num_pinned_in_row = 0
+dm2_num_pinned_in_row = 0
+
+% Number of isolated pinned actuators to randomly generate
+dm1_num_isolated_pinned_acts = 100
+dm2_num_isolated_pinned_acts = 0
 
 
+% Number of actuators railed in a column or a row
+dm1_num_railed_in_row = 0
+dm2_num_railed_in_row = 0
+
+% Number of isolated railed actuators to randomly generate
+dm1_num_isolated_railed_acts = 0
+dm2_num_isolated_railed_acts = 0
 
 % If you want the stuck acts in a row or column
 bool_allincol = false
+
 % If you want see the pinned/stuck/railed actuators we generated
 bool_figson = true
-
-% Number of stuck actuators that are by themselves
-%num_isolated_acts = 3526
-%
-dm1_num_isolated_acts = 500
-dm2_num_isolated_acts = 500
-
 
 %% Generate the pinned actuators indices dm1.pinned and pinned actuator
 % voltages dm1.Vpinned from a saved file instead of randomly generating
 % them
 
-
 % Load pinned actuators from previous file
 % If false will randomly generate the stuck actuators
-load_prev_dm1 = true
+load_prev_dm1 = false
 load_prev_dm2 = false
 
 
@@ -98,7 +102,7 @@ end
 addpath(path_to_phil)
 
 
-for TrialNum = 13
+for TrialNum = 16
     
     % Either load an old file for dm1.pinned and dm1.Vpinned or generate 
     % a random list of stuck actuators
@@ -115,8 +119,8 @@ for TrialNum = 13
     else
         % generate random dm1.pinned
         % generate random dm2.pinned
-        dm1 = phil_gen_stuck_acts(Nact, dm1_num_stuck_in_row, ...
-            dm1_num_isolated_acts, bool_allincol, bool_figson, 1);
+        dm1 = phil_gen_stuck_acts(Nact, dm1_num_pinned_in_row, ...
+            dm1_num_isolated_pinned_acts, bool_allincol, bool_figson, 1);
     end
     
     
@@ -134,11 +138,9 @@ for TrialNum = 13
     else
         
         % generate random dm2.pinned
-        dm2 = phil_gen_stuck_acts(Nact, dm2_num_stuck_in_row, ...
-            dm2_num_isolated_acts, bool_allincol, bool_figson, 2);
+        dm2 = phil_gen_stuck_acts(Nact, dm2_num_pinned_in_row, ...
+            dm2_num_isolated_pinned_acts, bool_allincol, bool_figson, 1);
     end
-    
-
     
     
     [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2);
