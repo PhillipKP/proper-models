@@ -19,7 +19,7 @@ dm1_num_pinned_in_row = 0
 dm2_num_pinned_in_row = 0
 
 % Number of isolated pinned actuators to randomly generate
-dm1_num_isolated_pinned_acts = 100
+dm1_num_isolated_pinned_acts = 0
 dm2_num_isolated_pinned_acts = 0
 
 
@@ -28,8 +28,12 @@ dm1_num_railed_in_row = 0
 dm2_num_railed_in_row = 0
 
 % Number of isolated railed actuators to randomly generate
-dm1_num_isolated_railed_acts = 0
+dm1_num_isolated_railed_acts = 100
 dm2_num_isolated_railed_acts = 0
+
+% The voltage which you considered things to be railed
+dm1_rail_V = 200
+dm2_rail_V = 200
 
 % If you want the stuck acts in a row or column
 bool_allincol = false
@@ -109,7 +113,7 @@ for TrialNum = 16
     if load_prev_dm1
         % load prev file
         
-        load(full_file_path_dm1,'mp')
+        load(full_file_path_dm1,'mp') %#ok<UNRCH>
         
         dm1.pinned = mp.dm1.pinned;
         dm1.Vpinned = mp.dm1.Vpinned;
@@ -120,7 +124,8 @@ for TrialNum = 16
         % generate random dm1.pinned
         % generate random dm2.pinned
         dm1 = phil_gen_stuck_acts(Nact, dm1_num_pinned_in_row, ...
-            dm1_num_isolated_pinned_acts, bool_allincol, bool_figson, 1);
+            dm1_num_isolated_pinned_acts, dm1_num_isolated_railed_acts,...
+            bool_allincol, dm1_rail_V, bool_figson, 1);
     end
     
     
@@ -139,10 +144,11 @@ for TrialNum = 16
         
         % generate random dm2.pinned
         dm2 = phil_gen_stuck_acts(Nact, dm2_num_pinned_in_row, ...
-            dm2_num_isolated_pinned_acts, bool_allincol, bool_figson, 1);
+            dm2_num_isolated_pinned_acts, dm2_num_isolated_railed_acts,...
+            bool_allincol, dm2_rail_V, bool_figson, 1);
     end
     
     
-    [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2);
+    %[mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2);
     
 end

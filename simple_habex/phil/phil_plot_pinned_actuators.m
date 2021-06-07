@@ -5,7 +5,7 @@ function [] = phil_plot_pinned_actuators(dm,title_str)
 pinned = dm.pinned
 Vpinned = dm.Vpinned
 
-
+% Each type of stuck actuators gets a different color
 color_normal_act = 0.0
 color_pinned_act = 0.2
 color_railed_act = 0.9
@@ -19,7 +19,7 @@ V = color_normal_act*ones(64,64)
 %User inputs:
 
 % The voltage in which the actuator is considered railed
-railedV = 1000;
+railedV = 200;
 
 % The voltage in which the actuator is considered pinned
 pinnedV = 0
@@ -33,8 +33,6 @@ Vpinned_railed_ind = find( (Vpinned >= railedV) )
 
 % Indices of pinned actuators in Vpinned
 Vpinned_pinned_ind = find( (Vpinned <= pinnedV) )
-
-
 
 
 stuck_act_ind = pinned(Vpinned_stuck_ind)
