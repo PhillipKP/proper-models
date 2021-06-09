@@ -89,8 +89,8 @@ mp.dm1.weight = 1;
 mp.dm2.weight = 1;
 
 %--Voltage range restrictions
-mp.dm1.maxAbsV = 1000;  %--Max absolute voltage (+/-) for each actuator [volts] %--NOT ENFORCED YET
-mp.dm2.maxAbsV = 1000;  %--Max absolute voltage (+/-) for each actuator [volts] %--NOT ENFORCED YET
+mp.dm1.maxAbsV = 200;  %--Max absolute voltage (+/-) for each actuator [volts] %--NOT ENFORCED YET
+mp.dm2.maxAbsV = 200;  %--Max absolute voltage (+/-) for each actuator [volts] %--NOT ENFORCED YET
 mp.maxAbsdV = 1000;     %--Max +/- delta voltage step for each actuator for DMs 1 and 2 [volts] %--NOT ENFORCED YET
 
 
@@ -159,7 +159,8 @@ mp.d_dm1_dm2 = 0.32;   % distance between DM1 and DM2 [meters]
 %% Deformable Mirrors: DM Errors
 
 %mp.dm1.Vmin = -10  % See what f%alco_enforce_dm_constraints does with this
-%mp.dm1.Vmax = 12
+mp.dm1.Vmax = 200
+mp.dm2.Vmax = 200
 
 %mp.dm1.Vmin = -10
 %mp.dm1.Vmax = 12

@@ -28,7 +28,7 @@ dm1_num_railed_in_row = 0
 dm2_num_railed_in_row = 0
 
 % Number of isolated railed actuators to randomly generate
-dm1_num_isolated_railed_acts = 100
+dm1_num_isolated_railed_acts_list = 0
 dm2_num_isolated_railed_acts = 0
 
 % The voltage which you considered things to be railed
@@ -46,8 +46,8 @@ bool_figson = true
 % them
 
 % Load pinned actuators from previous file
-% If false will randomly generate the stuck actuators
-load_prev_dm1 = false
+% If false willd randomly generate the stuck actuators
+load_prev_dm1 = true
 load_prev_dm2 = false
 
 
@@ -57,7 +57,7 @@ load_prev_dm2 = false
 % The series number of the mat files
 SavedFile_SeriesNum_dm1 = 0000;
 % The trial number of the mat files
-SavedFile_TrialNum_dm1 = 0005;
+SavedFile_TrialNum_dm1 = 0026;
 
 
 SavedFile_SeriesNum_dm2 = 0000;
@@ -91,7 +91,7 @@ full_file_path_dm2 = [path_to_ws, file_prefix_dm2, file_postfix];
 %% FALCO specific variables
 
 % Number of WFSC loops to run each trial
-Nitr = 5
+Nitr = 10
 
 
 
@@ -106,7 +106,11 @@ end
 addpath(path_to_phil)
 
 
-for TrialNum = 16
+count1 = 1
+
+for TrialNum = 37
+    
+    dm1_num_isolated_railed_acts = dm1_num_isolated_railed_acts_list(count1);
     
     % Either load an old file for dm1.pinned and dm1.Vpinned or generate 
     % a random list of stuck actuators
@@ -122,7 +126,7 @@ for TrialNum = 16
         
     else
         % generate random dm1.pinned
-        % generate random dm2.pinned
+        % generate random dm2.pinne
         dm1 = phil_gen_stuck_acts(Nact, dm1_num_pinned_in_row, ...
             dm1_num_isolated_pinned_acts, dm1_num_isolated_railed_acts,...
             bool_allincol, dm1_rail_V, bool_figson, 1);
@@ -148,7 +152,11 @@ for TrialNum = 16
             bool_allincol, dm2_rail_V, bool_figson, 1);
     end
     
+    % Actually runs falco
+    [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2);
+   
+    close all;
     
-    %[mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2);
+    count1 = count1 + 1;
     
 end

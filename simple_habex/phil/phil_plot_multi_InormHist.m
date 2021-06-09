@@ -4,7 +4,7 @@ function [] = phil_plot_multi_InormHist(SeriesNumVec, TrialNumVec, varargin)
 % Where to save the pngs
 if ismac
     path_to_png = '/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/png/';
-elseif (~ismax) && (isunix)
+elseif (~ismac) && (isunix)
     path_to_png = '/home/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/png/';
 end
 
@@ -64,7 +64,18 @@ figure;
 for fi = 1:length(SeriesNumVec)
 
     load(full_file_path{fi})
-    rl{fi} = mp.runLabel(1:20)
+    
+    % File Prefix
+    fp{fi} = mp.runLabel(1:20)
+    
+    % Collect stats on railed and pinned actuators
+    dm1r{fi} = sum(mp.dm1.Vpinned == 200)
+    dm1p{fi} = sum(mp.dm1.Vpinned == 0)
+    
+    dm2r{fi} = sum(mp.dm2.Vpinned == 200)
+    dm2p{fi} = sum(mp.dm2.Vpinned == 0)
+    
+    rl{fi} = [fp{fi},  ', DM1R: ', num2str(dm1r{fi})]
     
     
     semilogy(0:mp.Nitr,out.InormHist,'linewidth',3);
@@ -93,9 +104,9 @@ xlabel('WFSC Iteration', 'interpreter', 'none');
 ylabel('Mean NI')
 
 xlim([0 mp.Nitr-1])
-ylim([1e-11 1e-4 ])
+ylim([1e-11 1e-1 ])
 
-yticks([ 1e-11 1e-10 1e-9 1e-8 1e-7 1e-6 1e-5 1e-4])
+yticks([1e-14 1e-13 1e-12 1e-11 1e-10 1e-9 1e-8 1e-7 1e-6 1e-5 1e-4 1e-3 1e-2 1e-1])
 
 % Sets the title
 if title_flag
