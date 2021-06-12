@@ -28,7 +28,7 @@ dm1_num_railed_in_row = 0
 dm2_num_railed_in_row = 0
 
 % Number of isolated railed actuators to randomly generate
-dm1_num_isolated_railed_acts_list = 0
+dm1_num_isolated_railed_acts_list = 50
 dm2_num_isolated_railed_acts = 0
 
 % The voltage which you considered things to be railed
@@ -47,7 +47,7 @@ bool_figson = true
 
 % Load pinned actuators from previous file
 % If false willd randomly generate the stuck actuators
-load_prev_dm1 = true
+load_prev_dm1 = false
 load_prev_dm2 = false
 
 
@@ -92,9 +92,6 @@ full_file_path_dm2 = [path_to_ws, file_prefix_dm2, file_postfix];
 
 % Number of WFSC loops to run each trial
 Nitr = 10
-
-
-
 
 
 %- Add paths depending on which computer you are on
