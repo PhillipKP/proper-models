@@ -19,8 +19,8 @@ dm1_num_pinned_in_row = 0
 dm2_num_pinned_in_row = 0
 
 % Number of isolated pinned actuators to randomly generate
-dm1_num_isolated_pinned_acts = 0
-dm2_num_isolated_pinned_acts = 0
+dm1_num_isolated_pinned_acts = 10
+dm2_num_isolated_pinned_acts = 10
 
 
 % Number of actuators railed in a column or a row
@@ -28,12 +28,16 @@ dm1_num_railed_in_row = 0
 dm2_num_railed_in_row = 0
 
 % Number of isolated railed actuators to randomly generate
-dm1_num_isolated_railed_acts_list = 50
+dm1_num_isolated_railed_acts_list = 0
 dm2_num_isolated_railed_acts = 0
 
 % The voltage which you considered things to be railed
 dm1_rail_V = 200
 dm2_rail_V = 200
+
+% The uniform bias voltage
+dm1.biasV = 250
+dm2.biasV = 250
 
 % If you want the stuck acts in a row or column
 bool_allincol = false
@@ -105,7 +109,7 @@ addpath(path_to_phil)
 
 count1 = 1
 
-for TrialNum = 37
+for TrialNum = 0
     
     dm1_num_isolated_railed_acts = dm1_num_isolated_railed_acts_list(count1);
     

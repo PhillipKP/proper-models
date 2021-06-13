@@ -125,7 +125,7 @@ mp.dm2.inf_sign = '+';
 
 %--DM1 parameters
 mp.dm1.Nact = 64;               % # of actuators across DM array
-mp.dm1.VtoH = 5e-9*ones(mp.dm1.Nact);  % gains of all actuators [nm/V of free stroke]
+mp.dm1.VtoH = 1e-9*ones(mp.dm1.Nact);  % gains of all actuators [nm/V of free stroke]
 mp.dm1.xtilt = 0;               % for foreshortening. angle of rotation about x-axis [degrees]
 mp.dm1.ytilt = 0;               % for foreshortening. angle of rotation about y-axis [degrees]
 mp.dm1.zrot = 0;                % clocking of DM surface [degrees]
@@ -135,7 +135,7 @@ mp.dm1.edgeBuffer = 1;          % max radius (in actuator spacings) outside of b
 
 %--DM2 parameters
 mp.dm2.Nact = 64;               % # of actuators across DM array
-mp.dm2.VtoH = 5e-9*ones(mp.dm1.Nact);  % gains of all actuators [nm/V of free stroke]
+mp.dm2.VtoH = 1e-9*ones(mp.dm1.Nact);  % gains of all actuators [nm/V of free stroke]
 mp.dm2.xtilt = 0;               % for foreshortening. angle of rotation about x-axis [degrees]
 mp.dm2.ytilt = 0;               % for foreshortening. angle of rotation about y-axis [degrees]
 mp.dm2.zrot = 0;                % clocking of DM surface [degrees]
@@ -152,51 +152,6 @@ mp.dm2.Dstop = mp.dm2.Nact*mp.dm1.dm_spacing;   %--Diameter of iris [meters]
 %--DM separations
 mp.d_P2_dm1 = 0;        % distance (along +z axis) from P2 pupil to DM1 [meters]
 mp.d_dm1_dm2 = 0.32;   % distance between DM1 and DM2 [meters]
-
-
-%% Deformable Mirrors: DM Errors
-
-mp.dm1.Vmin = -1000;  % See what f%alco_enforce_dm_constraints does with this
-mp.dm1.Vmax = 1000;
-
-mp.dm2.Vmin = -1000;  % See what f%alco_enforce_dm_constraints does with this
-mp.dm2.Vmax = 1000;
-
-
-mp.dm1.pinned = dm1.pinned;
-mp.dm1.Vpinned = -mp.dm1.biasMap(mp.dm1.pinned) - 250; 
-
-mp.dm2.pinned = dm2.pinned;
-mp.dm2.Vpinned = -mp.dm2.biasMap(mp.dm2.pinned) - 250;
-
-
-
-
-% Check if the pinned actuators are outside the beam
-load('dm1_act_ele.mat','dm1_act_ele')
-load('dm2_act_ele.mat','dm2_act_ele')
-
-
-if isfield(mp.dm1,'pinned') && ismember(0,(ismember(mp.dm1.pinned,dm1_act_ele) )) 
-    disp('Warning some of the pinned actuators in DM1 are outside the beam')
-    beep;pause(1);beep;pause
-end
-if isfield(mp.dm2,'pinned') && ismember(0,(ismember(mp.dm2.pinned,dm2_act_ele) )) 
-    disp('Warning some of the pinned actuators in DM2 are outside the beam')
-    beep;pause(1);beep;pause
-end
-
-
-% NEW CODE:
-%mp.dm1.weak = [1886]
-%mp.dm1.VtoHweak = [.1e-9]
-
-if isfield(mp.dm1,'weak') && ismember(0,(ismember(mp.dm1.pinned,dm1_act_ele) )) 
-    disp('Warning some of the weak actuators in DM1 are outside the beam')
-end
-if isfield(mp.dm2,'weak') && ismember(0,(ismember(mp.dm2.pinned,dm2_act_ele) )) 
-    disp('Warning some of the weak actuators in DM2 are outside the beam')
-end
 
 
 
@@ -320,6 +275,52 @@ colorbar;
 set(gca,'fontsize',16)
 
 set(gcf,'position',[ 3146         358        1292         529])
+
+%% Deformable Mirrors: DM Errors
+
+mp.dm1.Vmin = -1000;  % See what f%alco_enforce_dm_constraints does with this
+mp.dm1.Vmax = 1000;
+
+mp.dm2.Vmin = -1000;  % See what f%alco_enforce_dm_constraints does with this
+mp.dm2.Vmax = 1000;
+
+
+mp.dm1.pinned = dm1.pinned;
+mp.dm1.Vpinned = -mp.dm1.biasMap(mp.dm1.pinned) - 250; 
+
+mp.dm2.pinned = dm2.pinned;
+mp.dm2.Vpinned = -mp.dm2.biasMap(mp.dm2.pinned) - 250;
+
+
+
+
+% Check if the pinned actuators are outside the beam
+load('dm1_act_ele.mat','dm1_act_ele')
+load('dm2_act_ele.mat','dm2_act_ele')
+
+
+if isfield(mp.dm1,'pinned') && ismember(0,(ismember(mp.dm1.pinned,dm1_act_ele) )) 
+    disp('Warning some of the pinned actuators in DM1 are outside the beam')
+    beep;pause(1);beep;pause
+end
+if isfield(mp.dm2,'pinned') && ismember(0,(ismember(mp.dm2.pinned,dm2_act_ele) )) 
+    disp('Warning some of the pinned actuators in DM2 are outside the beam')
+    beep;pause(1);beep;pause
+end
+
+
+% NEW CODE:
+%mp.dm1.weak = [1886]
+%mp.dm1.VtoHweak = [.1e-9]
+
+if isfield(mp.dm1,'weak') && ismember(0,(ismember(mp.dm1.pinned,dm1_act_ele) )) 
+    disp('Warning some of the weak actuators in DM1 are outside the beam')
+end
+if isfield(mp.dm2,'weak') && ismember(0,(ismember(mp.dm2.pinned,dm2_act_ele) )) 
+    disp('Warning some of the weak actuators in DM2 are outside the beam')
+end
+
+
 
 %% Enforcement of stuck, pinned, or railed actuators in full
 
