@@ -44,17 +44,22 @@ end
 %%--Output Data Directories (Comment these lines out to use defaults within falco-matlab/data/ directory.)
 % mp.path.config = ; %--Location of config files and minimal output files. Default is [mp.path.falco filesep 'data' filesep 'brief' filesep]
 
-% Macbook Pro
+% Phil's Macbook Pro
 if isunix && ismac
     mp.path.ws = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
+    % Where to save the png files
+    mp.path.png = '/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/png/';
     % (Mostly) complete workspace from end of trial. Default is [mp.path.falco filesep 'data' filesep 'ws' filesep];
 end
 % On S383 Computers
 if isunix && ~(ismac)
     mp.path.ws = '/home/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
+    % Where to save the png files
+    mp.path.png = '/home/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/png/';
     
 end
-% s383 COMPUTERS
+
+
 
 
 mp.flagSaveWS = true;  %--Whether to save out entire (large) workspace at the end of trial. Default is false

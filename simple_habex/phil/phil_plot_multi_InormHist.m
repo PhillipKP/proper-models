@@ -70,12 +70,12 @@ for fi = 1:length(SeriesNumVec)
     
     % Collect stats on railed and pinned actuators
     dm1r{fi} = sum(mp.dm1.Vpinned == 200)
-    dm1p{fi} = sum(mp.dm1.Vpinned == 0)
+    dm1p{fi} = sum(mp.dm1.Vpinned < -200)
     
     dm2r{fi} = sum(mp.dm2.Vpinned == 200)
-    dm2p{fi} = sum(mp.dm2.Vpinned == 0)
+    dm2p{fi} = sum(mp.dm1.Vpinned < -200)
     
-    rl{fi} = [fp{fi},  ', DM1R: ', num2str(dm1r{fi})]
+    rl{fi} = [fp{fi},  ', DM1P: ', num2str(dm1p{fi}), ', DM2P: ', num2str(dm2p{fi})]
     
     
     semilogy(0:mp.Nitr,out.InormHist,'linewidth',3);
@@ -103,8 +103,7 @@ grid on
 xlabel('WFSC Iteration', 'interpreter', 'none');
 ylabel('Mean NI')
 
-xlim([0 mp.Nitr-1])
-ylim([1e-11 1e-1 ])
+
 
 yticks([1e-14 1e-13 1e-12 1e-11 1e-10 1e-9 1e-8 1e-7 1e-6 1e-5 1e-4 1e-3 1e-2 1e-1])
 
@@ -119,7 +118,8 @@ set(lh, 'Interpreter', 'none','location','southwest')
 
 % Change the fontsize of everything
 set(gca,'fontsize',16);
-
+xlim([0 mp.Nitr-1])
+ylim([1e-11 1e-4 ])
 % Saves as a png
 if save_flag
     saveas(gcf,[path_to_png, ss, '.png'])

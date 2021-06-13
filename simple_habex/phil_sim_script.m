@@ -19,8 +19,11 @@ dm1_num_pinned_in_row = 0
 dm2_num_pinned_in_row = 0
 
 % Number of isolated pinned actuators to randomly generate
-dm1_num_isolated_pinned_acts = 10
-dm2_num_isolated_pinned_acts = 10
+dm1_num_isolated_pinned_acts = 0
+dm2_num_isolated_pinned_acts = 0
+
+dm1_num_isolated_pinned_acts_list = [1:9]
+dm2_num_isolated_pinned_acts_list = [1:9]
 
 
 % Number of actuators railed in a column or a row
@@ -28,7 +31,7 @@ dm1_num_railed_in_row = 0
 dm2_num_railed_in_row = 0
 
 % Number of isolated railed actuators to randomly generate
-dm1_num_isolated_railed_acts_list = 0
+dm1_num_isolated_railed_acts = 0
 dm2_num_isolated_railed_acts = 0
 
 % The voltage which you considered things to be railed
@@ -109,9 +112,15 @@ addpath(path_to_phil)
 
 count1 = 1
 
-for TrialNum = 0
+for TrialNum = 40:48
     
-    dm1_num_isolated_railed_acts = dm1_num_isolated_railed_acts_list(count1);
+    %dm1_num_isolated_railed_acts = dm1_num_isolated_railed_acts_list(count1);
+    
+    dm1_num_isolated_pinned_acts = dm1_num_isolated_pinned_acts_list(count1)
+    dm2_num_isolated_pinned_acts = dm2_num_isolated_pinned_acts_list(count1)
+    
+    
+    
     
     % Either load an old file for dm1.pinned and dm1.Vpinned or generate 
     % a random list of stuck actuators
