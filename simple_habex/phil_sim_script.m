@@ -22,8 +22,8 @@ dm2_num_pinned_in_row = 0
 dm1_num_isolated_pinned_acts = 0
 dm2_num_isolated_pinned_acts = 0
 
-dm1_num_isolated_pinned_acts_list = [1:9]
-dm2_num_isolated_pinned_acts_list = [1:9]
+dm1_num_isolated_pinned_acts_list = [10]
+dm2_num_isolated_pinned_acts_list = [10]
 
 
 % Number of actuators railed in a column or a row
@@ -48,6 +48,15 @@ bool_allincol = false
 % If you want see the pinned/stuck/railed actuators we generated
 bool_figson = true
 
+%% 
+load_prev_file = true
+
+% Uses the exact same pinned actuators as before
+SeriesList   = [0  0  0  0  0  0  0  0  0  0]
+TrialNumList = [40 41 42 43 44 45 46 47 48 57]
+
+
+
 %% Generate the pinned actuators indices dm1.pinned and pinned actuator
 % voltages dm1.Vpinned from a saved file instead of randomly generating
 % them
@@ -61,44 +70,47 @@ load_prev_dm2 = false
 % dm1.pinned and dm1.Vpinned and dm2.pinned and dm2.Vpinned can be loaded
 % from seperate files
 
-% The series number of the mat files
-SavedFile_SeriesNum_dm1 = 0000;
-% The trial number of the mat files
-SavedFile_TrialNum_dm1 = 0026;
+% % The series number of the mat files
+% SavedFile_SeriesNum_dm1 = 0000;
+% % The trial number of the mat files
+% SavedFile_TrialNum_dm1 = 0026;
+% 
+% 
+% SavedFile_SeriesNum_dm2 = 0000;
+% % The trial number of the mat files
+% SavedFile_TrialNum_dm2 = 0005;
+% 
+% 
+% file_prefix_dm1 = ['Series', num2str(SavedFile_SeriesNum_dm1,'%04.f'),...
+%     '_Trial',num2str(SavedFile_TrialNum_dm1,'%04.f')];
+% 
+% file_prefix_dm2 = ['Series', num2str(SavedFile_SeriesNum_dm2,'%04.f'),...
+%     '_Trial',num2str(SavedFile_TrialNum_dm2,'%04.f')];
+% 
+% 
+% file_postfix = ...
+%     '_vortex_simple_2DM64_z0.32_IWA2_OWA26_1lams550nm_BW1_gridsearchEFC_all.mat';
+% 
+% if (~ismac) && (isunix)
+%     path_to_ws = ...
+%         '/home/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
+% elseif ismac
+%     path_to_ws = ...
+%         '/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
+% end
+% 
+% 
+% % This is the file that will be loaded
+% full_file_path_dm1 = [path_to_ws, file_prefix_dm1, file_postfix];
+% full_file_path_dm2 = [path_to_ws, file_prefix_dm2, file_postfix];
 
 
-SavedFile_SeriesNum_dm2 = 0000;
-% The trial number of the mat files
-SavedFile_TrialNum_dm2 = 0005;
 
-
-file_prefix_dm1 = ['Series', num2str(SavedFile_SeriesNum_dm1,'%04.f'),...
-    '_Trial',num2str(SavedFile_TrialNum_dm1,'%04.f')];
-
-file_prefix_dm2 = ['Series', num2str(SavedFile_SeriesNum_dm2,'%04.f'),...
-    '_Trial',num2str(SavedFile_TrialNum_dm2,'%04.f')];
-
-
-file_postfix = ...
-    '_vortex_simple_2DM64_z0.32_IWA2_OWA26_1lams550nm_BW1_gridsearchEFC_all.mat';
-
-if (~ismac) && (isunix)
-    path_to_ws = ...
-        '/home/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
-elseif ismac
-    path_to_ws = ...
-        '/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
-end
-
-
-% This is the file that will be loaded
-full_file_path_dm1 = [path_to_ws, file_prefix_dm1, file_postfix];
-full_file_path_dm2 = [path_to_ws, file_prefix_dm2, file_postfix];
 
 %% FALCO specific variables
 
 % Number of WFSC loops to run each trial
-Nitr = 10
+Nitr = 11
 
 
 %- Add paths depending on which computer you are on
@@ -112,7 +124,10 @@ addpath(path_to_phil)
 
 count1 = 1
 
-for TrialNum = 40:48
+for TrialNum = 59:68 
+    
+    
+
     
     %dm1_num_isolated_railed_acts = dm1_num_isolated_railed_acts_list(count1);
     
@@ -135,8 +150,8 @@ for TrialNum = 40:48
         clear mp
         
     else
+        
         % generate random dm1.pinned
-        % generate random dm2.pinne
         dm1 = phil_gen_stuck_acts(Nact, dm1_num_pinned_in_row, ...
             dm1_num_isolated_pinned_acts, dm1_num_isolated_railed_acts,...
             bool_allincol, dm1_rail_V, bool_figson, 1);
@@ -160,6 +175,20 @@ for TrialNum = 40:48
         dm2 = phil_gen_stuck_acts(Nact, dm2_num_pinned_in_row, ...
             dm2_num_isolated_pinned_acts, dm2_num_isolated_railed_acts,...
             bool_allincol, dm2_rail_V, bool_figson, 1);
+    end
+    
+    
+    if load_prev_file
+        
+            path_to_file = phil_build_full_path( SeriesList(count1), TrialNumList(count1) );
+            load(path_to_file);
+            
+            dm1.pinned = mp.dm1.pinned;
+            dm1.Vpinned = mp.dm1.Vpinned;
+            
+            dm2.pinned = mp.dm2.pinned;
+            dm2.Vpinned = mp.dm2.Vpinned;
+            
     end
     
     % Actually runs falco
