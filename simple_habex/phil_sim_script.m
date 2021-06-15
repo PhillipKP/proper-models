@@ -52,8 +52,11 @@ bool_figson = true
 load_prev_file = true
 
 % Uses the exact same pinned actuators as before
-SeriesList   = [0  0  0  0  0  0  0  0  0  0]
-TrialNumList = [40 41 42 43 44 45 46 47 48 57]
+%SeriesList   = [0 0  0  0  0  0  0  0  0  0]
+%TrialNumList = [40 41 42 43 44 45 46 47 48 57]
+
+SeriesList   = [0  0  0  0 ]
+TrialNumList = [49 50 51 52]
 
 
 
@@ -124,15 +127,15 @@ addpath(path_to_phil)
 
 count1 = 1
 
-for TrialNum = 59:68 
+for TrialNum = 80:83
     
     
 
     
     %dm1_num_isolated_railed_acts = dm1_num_isolated_railed_acts_list(count1);
     
-    dm1_num_isolated_pinned_acts = dm1_num_isolated_pinned_acts_list(count1)
-    dm2_num_isolated_pinned_acts = dm2_num_isolated_pinned_acts_list(count1)
+    %dm1_num_isolated_pinned_acts = dm1_num_isolated_pinned_acts_list(count1)
+    %dm2_num_isolated_pinned_acts = dm2_num_isolated_pinned_acts_list(count1)
     
     
     
