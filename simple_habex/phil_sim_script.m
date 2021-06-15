@@ -52,11 +52,16 @@ bool_figson = true
 load_prev_file = true
 
 % Uses the exact same pinned actuators as before
+<<<<<<< HEAD
 %SeriesList   = [0 0  0  0  0  0  0  0  0  0]
 %TrialNumList = [40 41 42 43 44 45 46 47 48 57]
 
 SeriesList   = [0  0  0  0 ]
 TrialNumList = [49 50 51 52]
+=======
+SeriesList   = [0  0  0  0  0  0  0  0  0  0  0  0  0 ]
+TrialNumList = [39 40 41 42 43 44 45 46 47 48 57 49 50]
+>>>>>>> 5c286ef6f2416d80fa54487a5da39c9ae36ed496
 
 
 

@@ -289,7 +289,8 @@ mp.dm1.pinned = dm1.pinned;
 mp.dm1.Vpinned = -mp.dm1.biasMap(mp.dm1.pinned) - 125; 
 
 mp.dm2.pinned = dm2.pinned;
-mp.dm2.Vpinned = -mp.dm2.biasMap(mp.dm2.pinned) - 125;
+mp.dm2.Vpinned = -mp.dm2.biasMap(mp.dm2.pinned) - 125; 
+
 
 
 
