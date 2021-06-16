@@ -22,8 +22,8 @@ dm2_num_pinned_in_row = 0
 dm1_num_isolated_pinned_acts = 0
 dm2_num_isolated_pinned_acts = 0
 
-dm1_num_isolated_pinned_acts_list = [10]
-dm2_num_isolated_pinned_acts_list = [10]
+dm1_num_isolated_pinned_acts_list = [20:10:90]
+dm2_num_isolated_pinned_acts_list = [20:10:90]
 
 
 % Number of actuators railed in a column or a row
@@ -49,19 +49,15 @@ bool_allincol = false
 bool_figson = true
 
 %% 
-load_prev_file = true
+load_prev_file = false
 
 % Uses the exact same pinned actuators as before
-<<<<<<< HEAD
-%SeriesList   = [0 0  0  0  0  0  0  0  0  0]
-%TrialNumList = [40 41 42 43 44 45 46 47 48 57]
 
-SeriesList   = [0  0  0  0 ]
-TrialNumList = [49 50 51 52]
-=======
-SeriesList   = [0  0  0  0  0  0  0  0  0  0  0  0  0 ]
-TrialNumList = [39 40 41 42 43 44 45 46 47 48 57 49 50]
->>>>>>> 5c286ef6f2416d80fa54487a5da39c9ae36ed496
+
+TrialNumList = [70:79]
+SeriesList   = zeros(size(TrialNumList));
+lamsList     = ones(size(TrialNumList));
+bwList       = ones(size(TrialNumList));
 
 
 
@@ -132,15 +128,15 @@ addpath(path_to_phil)
 
 count1 = 1
 
-for TrialNum = 80:83
+for TrialNum = 96:103
     
     
 
     
     %dm1_num_isolated_railed_acts = dm1_num_isolated_railed_acts_list(count1);
     
-    %dm1_num_isolated_pinned_acts = dm1_num_isolated_pinned_acts_list(count1)
-    %dm2_num_isolated_pinned_acts = dm2_num_isolated_pinned_acts_list(count1)
+    dm1_num_isolated_pinned_acts = dm1_num_isolated_pinned_acts_list(count1)
+    dm2_num_isolated_pinned_acts = dm2_num_isolated_pinned_acts_list(count1)
     
     
     
@@ -188,7 +184,7 @@ for TrialNum = 80:83
     
     if load_prev_file
         
-            path_to_file = phil_build_full_path( SeriesList(count1), TrialNumList(count1) );
+            path_to_file = phil_build_full_path( SeriesList(count1), TrialNumList(count1), lamsList(count1), bwList(count1) );
             load(path_to_file);
             
             dm1.pinned = mp.dm1.pinned;
