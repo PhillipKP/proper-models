@@ -171,7 +171,7 @@ mp.Fend.FOV = 30; %--half-width of the field of view in both dimensions [lambda0
 
 %--Correction and scoring region definition
 mp.Fend.corr.Rin  = 2.0;   % inner radius of dark hole correction region [lambda0/D]
-mp.Fend.corr.Rout = 20;  % outer radius of dark hole correction region [lambda0/D]
+mp.Fend.corr.Rout = 26;  % outer radius of dark hole correction region [lambda0/D]
 mp.Fend.corr.ang  = 180;  % angular opening of dark hole correction region [degrees]
 
 mp.Fend.score.Rin  = mp.Fend.corr.Rin;  % inner radius of dark hole scoring region [lambda0/D]
