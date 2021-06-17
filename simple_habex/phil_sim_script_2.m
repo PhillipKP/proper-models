@@ -8,7 +8,7 @@ SeriesNum = 0000;
 
 Nitr = 11;
 
-sim_type = 'scheduled'
+sim_type = 'no_stuck_acts'
 
 
 
@@ -35,7 +35,7 @@ end
 count1 = 1
 
 
-for TrialNum = 120:124
+for TrialNum = 125
     
     if strcmp( sim_type, 'scheduled')
         dm1.pinned = dm1.schedule(1:count1)
