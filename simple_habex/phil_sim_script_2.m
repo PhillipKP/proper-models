@@ -35,7 +35,7 @@ end
 count1 = 1
 
 
-for TrialNum = 115:119
+for TrialNum = 120:124
     
     if strcmp( sim_type, 'scheduled')
         dm1.pinned = dm1.schedule(1:count1)
