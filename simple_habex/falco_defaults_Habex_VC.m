@@ -368,3 +368,8 @@ mp.F3.VortexCharge = 6; %--Charge of the vortex mask
 % Mask values for PROPER model
 mp.full.normLyotDiam = mp.P4.ODnorm;
 mp.full.vortexCharge = mp.F3.VortexCharge;
+
+%% Turn on SVD plotting for regularization kicks
+mp.flagSVD = true;
+
+end
