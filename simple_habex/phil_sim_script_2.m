@@ -8,7 +8,9 @@ SeriesNum = 0000;
 
 Nitr = 11;
 
-sim_type = 'scheduled_2'
+sim_type = 'random_pinned_iso_acts'
+
+num_isolated_pinned_acts = 1;
 
 
 
@@ -34,6 +36,13 @@ switch lower(sim_type)
         dm1.pinned = []
         dm2.pinned = []
         
+    case {'random_pinned_iso_acts'}
+        
+        dm1 = phil_gen_stuck_acts(64, 0, num_isolated_pinned_acts, 0, true, 200, false, 1);
+        dm2 = phil_gen_stuck_acts(64, 0, num_isolated_pinned_acts, 0, true, 200, false, 2);
+        dm1 = rmfield(dm1,'Vpinned');
+        dm2 = rmfield(dm2,'Vpinned');
+        
         
 end
 
@@ -41,7 +50,7 @@ end
 count1 = 1
 
 
-for TrialNum = 128
+for TrialNum = 130:140
     
     if contains(sim_type,'scheduled')
         dm1.pinned = dm1.schedule(1:count1)
