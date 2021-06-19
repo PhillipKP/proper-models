@@ -8,7 +8,7 @@ SeriesNum = 0000;
 
 Nitr = 11;
 
-sim_type = 'scheduled'
+sim_type = 'scheduled_2'
 
 
 
