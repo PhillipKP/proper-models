@@ -290,12 +290,11 @@ mp.dm2.Vmax = 1000;
 
 mp.dm1.pinned = dm1.pinned;
 mp.dm1.Vpinned = -mp.dm1.biasMap(mp.dm1.pinned) - 250; 
-%mp.dm1.Vpinned = -mp.dm1.biasMap(mp.dm1.pinned) - 125; 
-
 
 mp.dm2.pinned = dm2.pinned;
-mp.dm2.Vpinned = -mp.dm2.biasMap(mp.dm2.pinned) - 250;
-%mp.dm2.Vpinned = -mp.dm2.biasMap(mp.dm2.pinned) - 125;
+mp.dm2.Vpinned = -mp.dm2.biasMap(mp.dm2.pinned) - 250; 
+
+
 
 
 
@@ -306,11 +305,11 @@ load('dm2_act_ele.mat','dm2_act_ele')
 
 if isfield(mp.dm1,'pinned') && ismember(0,(ismember(mp.dm1.pinned,dm1_act_ele) )) 
     disp('Warning some of the pinned actuators in DM1 are outside the beam')
-    beep;pause(1);beep;pause
+    %beep;pause(1);beep;
 end
 if isfield(mp.dm2,'pinned') && ismember(0,(ismember(mp.dm2.pinned,dm2_act_ele) )) 
     disp('Warning some of the pinned actuators in DM2 are outside the beam')
-    beep;pause(1);beep;pause
+    %beep;pause(1);beep;
 end
 
 

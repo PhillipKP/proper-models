@@ -2,6 +2,9 @@ function [ffpath] = phil_build_full_path(SeriesNum, TrialNum, varargin)
 
 
 % Defaults
+
+
+% Defaults
 mp.coro = 'vortex';
 mp.whichPupil = 'simple';
 mp.controller = 'gridsearchEFC';
