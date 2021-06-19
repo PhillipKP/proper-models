@@ -24,7 +24,7 @@ function [fig_num] = phil_plot_InormHist(mp, out, varargin)
 format short g
 
 disp('NI History');
-disp(out.InormHist.')
+disp(out.InormHist)
 
 nargin
 

@@ -52,8 +52,8 @@ bool_figson = true
 load_prev_file = true
 
 % Uses the exact same pinned actuators as before
-SeriesList   = [0  0  0  0  0  0  0  0  0  0  0  0  0 ]
-TrialNumList = [39 40 41 42 43 44 45 46 47 48 57 49 50]
+SeriesList   = [0  0  0  0  0  0  0  0  0  0  0  0 ]
+TrialNumList = [40 41 42 43 44 45 46 47 48 57 49 50]
 
 
 
@@ -124,7 +124,7 @@ addpath(path_to_phil)
 
 count1 = 1
 
-for TrialNum = 69:81
+for TrialNum = 69:80
     
     
 
