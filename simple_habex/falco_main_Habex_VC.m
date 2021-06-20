@@ -27,7 +27,7 @@
 % TrialNum is an integer for naming the final *.mat file
 % dm1 and dm2 are structs which contains fields like .pinned and .Vpinned 
 
-function [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2)
+function [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2, save_dir)
 
 
 
@@ -46,22 +46,25 @@ end
 
 % Phil's Macbook Pro
 if isunix && ismac
-    mp.path.ws = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
+    mp.path.ws = ['/Users/poon/Documents/dst_sim/proper-models/simple_habex/workspaces/', save_dir, '/'];
     % Where to save the png files
-    mp.path.png = ['/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/png/',...
-    'Series',num2str(SeriesNum,'%04d'),'_Trial',num2str(mp.TrialNum,'%04d'),'/'];
+    mp.path.png = ['/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/', save_dir, '/png/',...
+    'Series',num2str(SeriesNum,'%04d'),'_Trial',num2str(TrialNum,'%04d'),'/'];
     % (Mostly) complete workspace from end of trial. Default is [mp.path.falco filesep 'data' filesep 'ws' filesep];
 end
 % On S383 Computers
 if isunix && ~(ismac)
-    mp.path.ws = '/home/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
+    mp.path.ws = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/', save_dir, '/'];
     % Where to save the png files
-    mp.path.png = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/png/',...
+    mp.path.png = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/', save_dir, '/png/',...
     'Series',num2str(SeriesNum,'%04d'),'_Trial',num2str(TrialNum,'%04d'),'/'];
 end
 
 if ~(exist(mp.path.png)) 
     mkdir(mp.path.png)
+end
+if ~(exist(mp.path.ws))
+    mkdir(mp.path.ws)
 end
 
 

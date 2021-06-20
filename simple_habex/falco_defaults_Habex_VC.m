@@ -98,13 +98,48 @@ mp.maxAbsdV = 1000;     %--Max +/- delta voltage step for each actuator for DMs 
 % Controller options: 
 %  - 'gridsearchEFC' for EFC as an empirical grid search over tuning parameters
 %  - 'plannedEFC' for EFC with an automated regularization schedule
-mp.controller = 'gridsearchEFC';
 
-% % % GRID SEARCH EFC DEFAULTS     
-%--WFSC Iterations and Control Matrix Relinearization
-mp.Nitr = Nitr; %--Number of estimation+control iterations to perform
-mp.relinItrVec = 1:mp.Nitr;  %--Which correction iterations at which to re-compute the control Jacobian
+% %- Grid Search EFC PHILLIP
+% mp.controller = 'gridsearchEFC';
+% 
+% 
+% % % % GRID SEARCH EFC DEFAULTS     
+% %--WFSC Iterations and Control Matrix Relinearization
+% mp.Nitr = Nitr; %--Number of estimation+control iterations to perform
+% mp.relinItrVec = 1:mp.Nitr;  %--Which correction iterations at which to re-compute the control Jacobian
 mp.dm_ind = [1 2]; %--Which DMs to use
+
+
+%- Scheduled EFC PHLLIP 
+%--CONTROL SCHEDULE. Columns of mp.ctrl.sched_mat are: 
+  % Column 1: # of iterations, 
+  % Column 2: log10(regularization), 
+  % Column 3: which DMs to use (12, 128, 129, or 1289) for control
+  % Column 4: flag (0 = false, 1 = true), whether to re-linearize
+  %  at that iteration.
+  % Column 5: flag (0 = false, 1 = true), whether to perform an
+  %  EFC parameter grid search to find the set giving the best
+  %  contrast .
+  % The imaginary part of the log10(regularization) in column 2 is
+  % replaced for that iteration with the optimal log10(regularization)
+  % A row starting with [0, 0, 0, 1...] is for relinearizing only at that time
+mp.controller = 'plannedEFC';
+
+mp.ctrl.sched_mat = [...
+  repmat([1, 1j, 12, 1, 1], [5, 1]);... % grid-search EFC for a few iterations
+  [1, -5, 12, 1, 1];... % aggressive
+  repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
+  [1, -5, 12, 1, 1];... % aggressive
+  repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
+  [1, -5.5, 12, 1, 1];... % more aggressive
+  repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
+  [1, -6, 12, 1, 1];... % aggressive
+  repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+  ];
+[mp.Nitr, mp.relinItrVec, mp.gridSearchItrVec, mp.ctrl.log10regSchedIn, mp.dm_ind_sched] = falco_ctrl_EFC_schedule_generator(mp.ctrl.sched_mat);
+
+
+
 
 
 %% Deformable Mirrors: Influence Functions

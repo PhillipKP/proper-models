@@ -4,13 +4,16 @@
 clearvars
 
 %- The following variables are for monte carlo simulations
-SeriesNum = 0000;
+SeriesNum = 0001;
 
-Nitr = 11;
+Nitr = 30;
 
-sim_type = 'random_pinned_iso_acts'
+sim_type = 'scheduled'
 
 num_isolated_pinned_acts = 1;
+
+save_dir = 'pinned_scheduled'
+
 
 
 
@@ -60,7 +63,7 @@ for TrialNum = 0
     end
     
     % Actually runs falco
-    [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2);
+    [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2, save_dir);
     disp(dm1.pinned)
     disp(dm2.pinned)
    

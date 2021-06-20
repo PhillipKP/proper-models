@@ -63,7 +63,7 @@ for icav = 1:length(varargin)
     
 end
 
-for fi = 1:length(SeriesNumVec)
+for fi = 1:length(TrialNumVec)
     full_file_path{fi} = phil_build_full_path(SeriesNumVec(fi), ...
         TrialNumVec(fi), 'bw', bwVec(fi), 'owa', owaVec(fi), ...
         'nsbp', nsbpVec(fi) );
@@ -71,7 +71,7 @@ end
 
 
 figure;
-for fi = 1:length(SeriesNumVec)
+for fi = 1:length(TrialNumVec)
     
     load(full_file_path{fi})
     
@@ -92,12 +92,19 @@ for fi = 1:length(SeriesNumVec)
     
     
     
-   % switch bwVec(fi)
-   %     case 1
-            semilogy(0:mp.Nitr,out.InormHist,'linewidth',3);
-   %     case 10
-   %         semilogy(0:mp.Nitr,out.InormHist,'--','linewidth',3);
-   % end
+    % switch bwVec(fi)
+    %     case 1
+    
+    if mod(fi,2)
+        semilogy(0:mp.Nitr,out.InormHist,'linewidth',3);
+    else
+        semilogy(0:mp.Nitr,out.InormHist,'linewidth',3,'linestyle','--');
+    end
+    
+    
+    %     case 10
+    %         semilogy(0:mp.Nitr,out.InormHist,'--','linewidth',3);
+    % end
     
     
     hold all
@@ -144,17 +151,8 @@ ylim([1e-12 1e-4 ])
 
 ColorOdrDef = get(gca,'ColorOrder'); %7x3 RGB array
 %define your custom color order
-ColorOdrCustom = ...
-[0.2422       0.1504       0.6603;...
-      0.28033      0.27823       0.9221;...
-     0.24403      0.43583      0.99883;...
-        0.154       0.5902       0.9218;...
-      0.029667      0.70817      0.81633;...
-      0.19377      0.77577       0.6251;...
-      0.5044       0.7993        0.348;...
-      0.86343       0.7406      0.15963;...
-      0.9892      0.81357      0.18853;...
-      0.9769       0.9839       0.0805]; %10x3 RGB array
+ColorOdrCustom = parula(length(TrialNumVec));
+
 
 set(gca,'ColorOrder',ColorOdrCustom);
 
@@ -164,5 +162,8 @@ if save_flag
 end
 
 set(gcf,'position',[750 199 1063 654])
+
+% Make the major grid lines darker
+set(gca,'GridAlpha',1)
 
 end
