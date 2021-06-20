@@ -36,12 +36,7 @@ switch lower(sim_type)
         dm1.pinned = []
         dm2.pinned = []
         
-    case {'random_pinned_iso_acts'}
-        
-        dm1 = phil_gen_stuck_acts(64, 0, num_isolated_pinned_acts, 0, true, 200, false, 1);
-        dm2 = phil_gen_stuck_acts(64, 0, num_isolated_pinned_acts, 0, true, 200, false, 2);
-        dm1 = rmfield(dm1,'Vpinned');
-        dm2 = rmfield(dm2,'Vpinned');
+  
         
         
 end
@@ -50,16 +45,26 @@ end
 count1 = 1
 
 
-for TrialNum = 130:140
+for TrialNum = 0
     
     if contains(sim_type,'scheduled')
         dm1.pinned = dm1.schedule(1:count1)
         dm2.pinned = dm2.schedule(1:count1)
     end
     
+    if strcmp(sim_type,'random_pinned_iso_acts')
+        dm1 = phil_gen_stuck_acts(64, 0, num_isolated_pinned_acts, 0, true, 200, false, 1);
+        dm2 = phil_gen_stuck_acts(64, 0, num_isolated_pinned_acts, 0, true, 200, false, 2);
+        dm1 = rmfield(dm1,'Vpinned');
+        dm2 = rmfield(dm2,'Vpinned');
+    end
+    
     % Actually runs falco
     [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2);
-    
+    disp(dm1.pinned)
+    disp(dm2.pinned)
+   
+    pause(1);
     close all;
     
     count1 = count1 + 1;
