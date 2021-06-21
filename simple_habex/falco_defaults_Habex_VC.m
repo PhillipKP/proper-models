@@ -141,7 +141,6 @@ mp.ctrl.sched_mat = [...
 
 
 
-
 %% Deformable Mirrors: Influence Functions
 %--Influence Function Options:
 % - 'influence_dm5v2.fits' for one type of Xinetics DM
