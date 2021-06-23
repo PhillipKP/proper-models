@@ -100,13 +100,13 @@ mp.maxAbsdV = 1000;     %--Max +/- delta voltage step for each actuator for DMs 
 %  - 'plannedEFC' for EFC with an automated regularization schedule
 
 % %- Grid Search EFC PHILLIP
-% mp.controller = 'gridsearchEFC';
+%mp.controller = 'gridsearchEFC';
 % 
 % 
 % % % % GRID SEARCH EFC DEFAULTS     
 % %--WFSC Iterations and Control Matrix Relinearization
-% mp.Nitr = Nitr; %--Number of estimation+control iterations to perform
-% mp.relinItrVec = 1:mp.Nitr;  %--Which correction iterations at which to re-compute the control Jacobian
+%mp.Nitr = Nitr; %--Number of estimation+control iterations to perform
+%mp.relinItrVec = 1:mp.Nitr;  %--Which correction iterations at which to re-compute the control Jacobian
 mp.dm_ind = [1 2]; %--Which DMs to use
 
 
@@ -126,16 +126,25 @@ mp.dm_ind = [1 2]; %--Which DMs to use
 mp.controller = 'plannedEFC';
 
 mp.ctrl.sched_mat = [...
-  repmat([1, 1j, 12, 1, 1], [5, 1]);... % grid-search EFC for a few iterations
-  [1, -5, 12, 1, 1];... % aggressive
-  repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
-  [1, -5, 12, 1, 1];... % aggressive
-  repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
-  [1, -5.5, 12, 1, 1];... % more aggressive
-  repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
-  [1, -6, 12, 1, 1];... % aggressive
-  repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
-  ];
+    repmat([1, 1j, 12, 1, 1], [5, 1]);... % grid-search EFC for a few iterations
+    [1, -5, 12, 1, 1];... % aggressive
+    repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
+    [1, -5, 12, 1, 1];... % aggressive
+    repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
+    [1, -5.5, 12, 1, 1];... % more aggressive
+    repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
+    [1, -6, 12, 1, 1];... % aggressive
+    repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+    [1, -6, 12, 1, 1];... % aggressive
+    repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+    [1, -6, 12, 1, 1];... % aggressive
+    repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+    [1, -6, 12, 1, 1];... % aggressive
+    repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+    [1, -6, 12, 1, 1];... % aggressive
+    repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+    ];
+
 [mp.Nitr, mp.relinItrVec, mp.gridSearchItrVec, mp.ctrl.log10regSchedIn, mp.dm_ind_sched] = falco_ctrl_EFC_schedule_generator(mp.ctrl.sched_mat);
 
 

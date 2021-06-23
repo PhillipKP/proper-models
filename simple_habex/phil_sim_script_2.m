@@ -6,7 +6,7 @@ clearvars
 %- The following variables are for monte carlo simulations
 SeriesNum = 0001;
 
-Nitr = 30;
+Nitr = 34;
 
 sim_type = 'scheduled'
 
@@ -48,7 +48,7 @@ end
 count1 = 1
 
 
-for TrialNum = 0
+for TrialNum = 8
     
     if contains(sim_type,'scheduled')
         dm1.pinned = dm1.schedule(1:count1)
@@ -67,7 +67,7 @@ for TrialNum = 0
     disp(dm1.pinned)
     disp(dm2.pinned)
    
-    pause(1);
+    
     close all;
     
     count1 = count1 + 1;
