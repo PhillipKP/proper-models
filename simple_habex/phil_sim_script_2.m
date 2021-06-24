@@ -6,14 +6,14 @@ clearvars
 %- The following variables are for monte carlo simulations
 SeriesNum = 0001;
 
-Nitr = 34;
+Nitr = 30;
 
 sim_type = 'scheduled'
 
 num_isolated_pinned_acts = 1;
 
 save_dir = 'pinned_scheduled'
-
+controller = 'plannedEFC'
 
 
 
@@ -45,10 +45,10 @@ switch lower(sim_type)
 end
 
 
-count1 = 1
+count1 = 2
 
 
-for TrialNum = 8
+for TrialNum = 10:13
     
     if contains(sim_type,'scheduled')
         dm1.pinned = dm1.schedule(1:count1)
@@ -63,7 +63,7 @@ for TrialNum = 8
     end
     
     % Actually runs falco
-    [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2, save_dir);
+    [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2, controller, save_dir);
     disp(dm1.pinned)
     disp(dm2.pinned)
    

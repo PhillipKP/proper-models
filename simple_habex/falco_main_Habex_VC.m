@@ -27,7 +27,7 @@
 % TrialNum is an integer for naming the final *.mat file
 % dm1 and dm2 are structs which contains fields like .pinned and .Vpinned 
 
-function [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2, save_dir)
+function [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2, controller, save_dir)
 
 
 
@@ -51,7 +51,7 @@ mp.flagSaveWS = true;  %--Whether to save out entire (large) workspace at the en
 
 %% Step 2: Load default model parameters
 
-[mp] = falco_defaults_Habex_VC(mp, Nitr, dm1, dm2)
+[mp] = falco_defaults_Habex_VC(mp, Nitr, dm1, dm2, controller);
 
 
 %% Step 3: Overwrite default values as desired
