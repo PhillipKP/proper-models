@@ -1,5 +1,8 @@
-function [] = phil_plot_multi_InormHist(SeriesNumVec, TrialNumVec, bwVec, owaVec, nsbpVec, varargin)
+function [] = phil_plot_multi_InormHist(SeriesNumVec, TrialNumVec, varargin)
 
+% An example for conVec is: Where the first file used gridsearchEFC and the
+% second file use plannedEFC.
+% conVec = {'gridsearchEFC','plannedEFC'}
 
 % Where to save the pngs
 if ismac
@@ -11,18 +14,13 @@ end
 
 
 
-if length(bwVec) == 1
-    bwVec = bwVec*ones(size(TrialNumVec));
-end
+
 if length(SeriesNumVec) == 1
     SeriesNumVec = SeriesNumVec*ones(size(TrialNumVec));
 end
-if length(owaVec) == 1
-    owaVec = owaVec*ones(size(TrialNumVec));
-end
-if length(nsbpVec) == 1
-    nsbpVec = nsbpVec*ones(size(TrialNumVec));
-end
+
+
+
 
 
 
@@ -64,9 +62,10 @@ for icav = 1:length(varargin)
 end
 
 for fi = 1:length(TrialNumVec)
-    full_file_path{fi} = phil_build_full_path(SeriesNumVec(fi), ...
-        TrialNumVec(fi), 'bw', bwVec(fi), 'owa', owaVec(fi), ...
-        'nsbp', nsbpVec(fi) );
+    
+    full_file_path{fi} = phil_build_full_path_2(SeriesNumVec(fi),  TrialNumVec(fi));
+    
+    
 end
 
 
@@ -85,17 +84,17 @@ for fi = 1:length(TrialNumVec)
     dm2r{fi} = sum(mp.dm2.Vpinned == 200)
     dm2p{fi} = sum(mp.dm1.Vpinned < -200)
     
-    
+
     
     rl{fi} = [ fp{fi},  ', DM1P: ', num2str(dm1p{fi}), ...
-        ', DM2P: ', num2str(dm2p{fi}), ' BW: ', num2str(bwVec(fi)), '']
+        ', DM2P: ', num2str(dm2p{fi}), ', BW: ', num2str(mp.fracBW), ', ', mp.controller ,'']
     
     
     
     % switch bwVec(fi)
     %     case 1
     
-    if mod(fi,2)
+    if strcmp(mp.controller,'plannedEFC')
         semilogy(0:mp.Nitr,out.InormHist,'linewidth',3);
     else
         semilogy(0:mp.Nitr,out.InormHist,'linewidth',3,'linestyle','--');
@@ -146,15 +145,13 @@ set(lh, 'Interpreter', 'none','location','northeast')
 
 % Change the fontsize of everything
 set(gca,'fontsize',16);
-xlim([0 11])
+xlim([0 18])
 ylim([1e-12 1e-4 ])
 
-ColorOdrDef = get(gca,'ColorOrder'); %7x3 RGB array
-%define your custom color order
-ColorOdrCustom = parula(length(TrialNumVec));
-
-
-set(gca,'ColorOrder',ColorOdrCustom);
+% ColorOdrDef = get(gca,'ColorOrder'); %7x3 RGB array
+% %define your custom color order
+% ColorOdrCustom = parula(length(TrialNumVec));
+% set(gca,'ColorOrder',ColorOdrCustom);
 
 % Saves as a png
 if save_flag

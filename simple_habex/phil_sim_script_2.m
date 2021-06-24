@@ -48,7 +48,7 @@ end
 count1 = 1
 
 
-for TrialNum = 0
+for TrialNum = 1
     
     if contains(sim_type,'scheduled')
         dm1.pinned = dm1.schedule(1:count1)
