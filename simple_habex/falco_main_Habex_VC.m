@@ -27,7 +27,7 @@
 % TrialNum is an integer for naming the final *.mat file
 % dm1 and dm2 are structs which contains fields like .pinned and .Vpinned 
 
-function [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2, save_dir)
+function [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2, controller, save_dir)
 
 
 
@@ -43,29 +43,7 @@ end
 
 %%--Output Data Directories (Comment these lines out to use defaults within falco-matlab/data/ directory.)
 % mp.path.config = ; %--Location of config files and minimal output files. Default is [mp.path.falco filesep 'data' filesep 'brief' filesep]
-
-% Phil's Macbook Pro
-if isunix && ismac
-    mp.path.ws = ['/Users/poon/Documents/dst_sim/proper-models/simple_habex/workspaces/', save_dir, '/'];
-    % Where to save the png files
-    mp.path.png = ['/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/', save_dir, '/png/',...
-    'Series',num2str(SeriesNum,'%04d'),'_Trial',num2str(TrialNum,'%04d'),'/'];
-    % (Mostly) complete workspace from end of trial. Default is [mp.path.falco filesep 'data' filesep 'ws' filesep];
-end
-% On S383 Computers
-if isunix && ~(ismac)
-    mp.path.ws = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/', save_dir, '/'];
-    % Where to save the png files
-    mp.path.png = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/', save_dir, '/png/',...
-    'Series',num2str(SeriesNum,'%04d'),'_Trial',num2str(TrialNum,'%04d'),'/'];
-end
-
-if ~(exist(mp.path.png)) 
-    mkdir(mp.path.png)
-end
-if ~(exist(mp.path.ws))
-    mkdir(mp.path.ws)
-end
+phil_add_paths
 
 
 mp.flagSaveWS = true;  %--Whether to save out entire (large) workspace at the end of trial. Default is false
@@ -73,7 +51,7 @@ mp.flagSaveWS = true;  %--Whether to save out entire (large) workspace at the en
 
 %% Step 2: Load default model parameters
 
-[mp] = falco_defaults_Habex_VC(mp, Nitr, dm1, dm2)
+[mp] = falco_defaults_Habex_VC(mp, Nitr, dm1, dm2, controller);
 
 
 %% Step 3: Overwrite default values as desired

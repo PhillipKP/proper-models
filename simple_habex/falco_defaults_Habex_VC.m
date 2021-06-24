@@ -6,7 +6,7 @@
 % Initialize some structures if they don't already exist
 
 
-function [mp] = falco_defaults_Habex_VC(mp, Nitr, dm1, dm2)
+function [mp] = falco_defaults_Habex_VC(mp, Nitr, dm1, dm2, controller)
 %% Misc
 
 %--Record Keeping
@@ -25,7 +25,7 @@ mp.centering = 'pixel';
 %--Method of computing core throughput:
 % - 'HMI' for energy within half-max isophote divided by energy at telescope pupil
 % - 'EE' for encircled energy within a radius (mp.thput_radius) divided by energy at telescope pupil
-mp.thput_metric = 'EE'; 
+mp.thput_metric = 'EE';
 mp.thput_radius = 0.7; %--photometric aperture radius [lambda_c/D]. Used ONLY for 'EE' method.
 mp.thput_eval_x = 7; % x location [lambda_c/D] in dark hole at which to evaluate throughput
 mp.thput_eval_y = 0; % y location [lambda_c/D] in dark hole at which to evaluate throughput
@@ -71,16 +71,16 @@ mp.logGmin = -6;  % 10^(mp.logGmin) used on the intensity of DM1 and DM2 Jacobia
 %--Zernikes to suppress with controller
 mp.jac.zerns = 1;  %--Which Zernike modes to include in Jacobian. Given as the max Noll index. Always include the value "1" for the on-axis piston mode.
 mp.jac.Zcoef = 1e-9*ones(size(mp.jac.zerns)); %--meters RMS of Zernike aberrations. (piston value is reset to 1 later)
-    
+
 %--Zernikes to compute sensitivities for
 mp.eval.indsZnoll = []; %--Noll indices of Zernikes to compute values for
 %--Annuli to compute 1nm RMS Zernike sensitivities over. Columns are [inner radius, outer radius]. One row per annulus.
-mp.eval.Rsens = [2,3; 3,4; 4,5]; 
+mp.eval.Rsens = [2,3; 3,4; 4,5];
 
 %--Grid- or Line-Search Settings
 mp.ctrl.log10regVec = -6:1/2:-2; %--log10 of the regularization exponents (often called Beta values)
 mp.ctrl.dmfacVec = 1;            %--Proportional gain term applied to the total DM delta command. Usually in range [0.5,1].
-   
+
 %--Spatial pixel weighting
 mp.WspatialDef = [];% [3, 4.5, 3]; %--spatial control Jacobian weighting by annulus: [Inner radius, outer radius, intensity weight; (as many rows as desired)]
 
@@ -95,51 +95,71 @@ mp.maxAbsdV = 1000;     %--Max +/- delta voltage step for each actuator for DMs 
 
 
 %% Wavefront Control: Controller Specific
-% Controller options: 
+% Controller options:
 %  - 'gridsearchEFC' for EFC as an empirical grid search over tuning parameters
 %  - 'plannedEFC' for EFC with an automated regularization schedule
 
 % %- Grid Search EFC PHILLIP
-% mp.controller = 'gridsearchEFC';
-% 
-% 
-% % % % GRID SEARCH EFC DEFAULTS     
-% %--WFSC Iterations and Control Matrix Relinearization
-% mp.Nitr = Nitr; %--Number of estimation+control iterations to perform
-% mp.relinItrVec = 1:mp.Nitr;  %--Which correction iterations at which to re-compute the control Jacobian
+
+
+%
 mp.dm_ind = [1 2]; %--Which DMs to use
+% % % % GRID SEARCH EFC DEFAULTS
+% %--WFSC Iterations and Control Matrix Relinearization
 
+% Double check controller is either 'gridsearchEFC' or 'plannedEFC'
 
-%- Scheduled EFC PHLLIP 
-%--CONTROL SCHEDULE. Columns of mp.ctrl.sched_mat are: 
-  % Column 1: # of iterations, 
-  % Column 2: log10(regularization), 
-  % Column 3: which DMs to use (12, 128, 129, or 1289) for control
-  % Column 4: flag (0 = false, 1 = true), whether to re-linearize
-  %  at that iteration.
-  % Column 5: flag (0 = false, 1 = true), whether to perform an
-  %  EFC parameter grid search to find the set giving the best
-  %  contrast .
-  % The imaginary part of the log10(regularization) in column 2 is
-  % replaced for that iteration with the optimal log10(regularization)
-  % A row starting with [0, 0, 0, 1...] is for relinearizing only at that time
-mp.controller = 'plannedEFC';
+mp.controller = controller;
 
-mp.ctrl.sched_mat = [...
-  repmat([1, 1j, 12, 1, 1], [5, 1]);... % grid-search EFC for a few iterations
-  [1, -5, 12, 1, 1];... % aggressive
-  repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
-  [1, -5, 12, 1, 1];... % aggressive
-  repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
-  [1, -5.5, 12, 1, 1];... % more aggressive
-  repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
-  [1, -6, 12, 1, 1];... % aggressive
-  repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
-  ];
-[mp.Nitr, mp.relinItrVec, mp.gridSearchItrVec, mp.ctrl.log10regSchedIn, mp.dm_ind_sched] = falco_ctrl_EFC_schedule_generator(mp.ctrl.sched_mat);
+control_types = {'gridsearchEFC','plannedEFC'};
+
+if ~any(contains(control_types,controller))
+    error('variable controller not valid')
+end
+
+if strcmp(controller, 'gridsearchEFC')
+    mp.Nitr = Nitr; %--Number of estimation+control iterations to perform
+    mp.relinItrVec = 1:mp.Nitr;  %--Which correction iterations at which to re-compute the control Jacobian
+end
 
 
 
+%- Scheduled EFC PHLLIP
+%--CONTROL SCHEDULE. Columns of mp.ctrl.sched_mat are:
+% Column 1: # of iterations,
+% Column 2: log10(regularization),
+% Column 3: which DMs to use (12, 128, 129, or 1289) for control
+% Column 4: flag (0 = false, 1 = true), whether to re-linearize
+%  at that iteration.
+% Column 5: flag (0 = false, 1 = true), whether to perform an
+%  EFC parameter grid search to find the set giving the best
+%  contrast .
+% The imaginary part of the log10(regularization) in column 2 is
+% replaced for that iteration with the optimal log10(regularization)
+% A row starting with [0, 0, 0, 1...] is for relinearizing only at that time
+if strcmp(controller, 'plannedEFC')
+    
+    mp.ctrl.sched_mat = [...
+        repmat([1, 1j, 12, 1, 1], [5, 1]);... % grid-search EFC for a few iterations
+        [1, -5, 12, 1, 1];... % aggressive
+        repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
+        [1, -5, 12, 1, 1];... % aggressive
+        repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
+        [1, -5.5, 12, 1, 1];... % more aggressive
+        repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
+        [1, -6, 12, 1, 1];... % aggressive
+        repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+        [1, -6, 12, 1, 1];... % aggressive
+        repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+        [1, -6, 12, 1, 1];... % aggressive
+        repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+        [1, -6, 12, 1, 1];... % aggressive
+        repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+        ];
+    
+    [mp.Nitr, mp.relinItrVec, mp.gridSearchItrVec, mp.ctrl.log10regSchedIn, mp.dm_ind_sched] = falco_ctrl_EFC_schedule_generator(mp.ctrl.sched_mat);
+    
+end
 
 
 %% Deformable Mirrors: Influence Functions
@@ -208,7 +228,7 @@ mp.Fend.FOV = 30; %--half-width of the field of view in both dimensions [lambda0
 mp.Fend.corr.Rin  = 2.0;   % inner radius of dark hole correction region [lambda0/D]
 
 %mp.Fend.corr.Rout = 26;  % outer radius of dark hole correction region [lambda0/D]
-mp.Fend.corr.Rout = 20;   % Try this now. 
+mp.Fend.corr.Rout = 20;   % Try this now.
 
 mp.Fend.corr.ang  = 180;  % angular opening of dark hole correction region [degrees]
 
@@ -233,7 +253,7 @@ mp.P4.D = mp.P2.D;
 mp.P1.compact.Nbeam = 62*4; %62*7;
 mp.P2.compact.Nbeam = mp.P1.compact.Nbeam;
 mp.P3.compact.Nbeam = mp.P1.compact.Nbeam;
-mp.P4.compact.Nbeam = mp.P1.compact.Nbeam;  % P4 must be the same as P1 for Vortex. 
+mp.P4.compact.Nbeam = mp.P1.compact.Nbeam;  % P4 must be the same as P1 for Vortex.
 
 %--Number of re-imaging relays between pupil planesin compact model. Needed
 %to keep track of 180-degree rotations and (1/1j)^2 factors compared to the
@@ -244,11 +264,11 @@ mp.Nrelay2to3 = 1;
 mp.Nrelay3to4 = 1;
 mp.NrelayFend = 0; %--How many times to rotate the final image by 180 degrees
 
-%% Optical Layout: Full Model 
+%% Optical Layout: Full Model
 
 mp.full.flagPROPER = true; %--Whether the full model is a PROPER prescription
 mp.full.prescription = 'habex';
-mp.full.cor_type = 'vortex'; 
+mp.full.cor_type = 'vortex';
 %mp.full.map_dir = '/Users/ajriggs/Documents/habex/maps/';	%-- directory containing optical surface error maps
 
 % 383 COMPUTERS
@@ -263,8 +283,8 @@ end
 if isunix && ismac
     mp.full.map_dir = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/maps_dir/'
 end
-    
-mp.full.gridsize = 1024; % # of points across in PROPER model 
+
+mp.full.gridsize = 1024; % # of points across in PROPER model
 
 %--Focal planes
 mp.full.nout = ceil_even(1 + mp.Fend.res*(2*mp.Fend.FOV)); %  dimensions of output in pixels (overrides output_dim0)
@@ -324,10 +344,10 @@ mp.dm2.Vmax = 1000;
 
 
 mp.dm1.pinned = dm1.pinned;
-mp.dm1.Vpinned = -mp.dm1.biasMap(mp.dm1.pinned) - 250; 
+mp.dm1.Vpinned = -mp.dm1.biasMap(mp.dm1.pinned) - 250;
 
 mp.dm2.pinned = dm2.pinned;
-mp.dm2.Vpinned = -mp.dm2.biasMap(mp.dm2.pinned) - 250; 
+mp.dm2.Vpinned = -mp.dm2.biasMap(mp.dm2.pinned) - 250;
 
 
 
@@ -338,11 +358,11 @@ load('dm1_act_ele.mat','dm1_act_ele')
 load('dm2_act_ele.mat','dm2_act_ele')
 
 
-if isfield(mp.dm1,'pinned') && ismember(0,(ismember(mp.dm1.pinned,dm1_act_ele) )) 
+if isfield(mp.dm1,'pinned') && ismember(0,(ismember(mp.dm1.pinned,dm1_act_ele) ))
     disp('Warning some of the pinned actuators in DM1 are outside the beam')
     %beep;pause(1);beep;
 end
-if isfield(mp.dm2,'pinned') && ismember(0,(ismember(mp.dm2.pinned,dm2_act_ele) )) 
+if isfield(mp.dm2,'pinned') && ismember(0,(ismember(mp.dm2.pinned,dm2_act_ele) ))
     disp('Warning some of the pinned actuators in DM2 are outside the beam')
     %beep;pause(1);beep;
 end
@@ -352,10 +372,10 @@ end
 %mp.dm1.weak = [1886]
 %mp.dm1.VtoHweak = [.1e-9]
 
-if isfield(mp.dm1,'weak') && ismember(0,(ismember(mp.dm1.pinned,dm1_act_ele) )) 
+if isfield(mp.dm1,'weak') && ismember(0,(ismember(mp.dm1.pinned,dm1_act_ele) ))
     disp('Warning some of the weak actuators in DM1 are outside the beam')
 end
-if isfield(mp.dm2,'weak') && ismember(0,(ismember(mp.dm2.pinned,dm2_act_ele) )) 
+if isfield(mp.dm2,'weak') && ismember(0,(ismember(mp.dm2.pinned,dm2_act_ele) ))
     disp('Warning some of the weak actuators in DM2 are outside the beam')
 end
 
@@ -363,7 +383,7 @@ end
 
 %% Enforcement of stuck, pinned, or railed actuators in full
 
-% enforces the voltage values on the 
+% enforces the voltage values on the
 mp.dm1.enforce_absolute_voltage = true;
 mp.dm2.enforce_absolute_voltage = true;
 
@@ -381,7 +401,7 @@ inputs.ID = mp.P1.IDnorm ; % [pupil diameters]
 inputs.OD = mp.P1.ODnorm; % [pupil diameters]
 inputs.Nbeam = mp.P1.compact.Nbeam;
 inputs.Npad = 2^(nextpow2(mp.P1.compact.Nbeam));
-mp.P1.compact.mask = falco_gen_pupil_Simple(inputs); 
+mp.P1.compact.mask = falco_gen_pupil_Simple(inputs);
 
 
 %% Lyot stop (P4) Definition and Generation
@@ -393,7 +413,7 @@ inputs.ID = mp.P4.IDnorm ; % [pupil diameters]
 inputs.OD = mp.P4.ODnorm; % [pupil diameters]
 inputs.Nbeam = mp.P4.compact.Nbeam;
 inputs.Npad = 2^(nextpow2(mp.P4.compact.Nbeam));
-mp.P4.compact.mask = falco_gen_pupil_Simple(inputs); 
+mp.P4.compact.mask = falco_gen_pupil_Simple(inputs);
 
 
 %% VC-Specific Values %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
