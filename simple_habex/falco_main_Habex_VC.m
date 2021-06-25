@@ -214,7 +214,7 @@ mp.eval.indsZnoll = [2, 3];
  
 %--Amount of RMS Zernike mode used to calculate aberration sensitivities 
 % [meters]. WFIRST CGI uses 1e-9, and LUVOIR and HabEx use 1e-10. 
-mp.full.ZrmsVal = 1e-10; 
+mp.full.ZrmsVal = 10e-9; 
  
 %--Annuli to compute 1nm RMS Zernike sensitivities over.
 % Columns are [inner radius, outer radius]. One row per annulus.
