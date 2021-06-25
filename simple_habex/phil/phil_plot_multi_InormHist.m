@@ -68,7 +68,14 @@ for fi = 1:length(TrialNumVec)
     
 end
 
+% Define your custom color order from the parula colormap
+ColorOdrCustom = parula(sum(contains(full_file_path,'plannedEFC')));
 
+
+%set(gca,'ColorOrder',ColorOdrCustom);
+
+grid_count = 1;
+plan_count = 1;
 figure;
 for fi = 1:length(TrialNumVec)
     
@@ -80,31 +87,27 @@ for fi = 1:length(TrialNumVec)
     % Collect stats on railed and pinned actuators
     dm1r{fi} = sum(mp.dm1.Vpinned == 200)
     dm1p{fi} = sum(mp.dm1.Vpinned < -200)
-    
     dm2r{fi} = sum(mp.dm2.Vpinned == 200)
     dm2p{fi} = sum(mp.dm1.Vpinned < -200)
     
-
+    % Store controller type
+    con{fi} = mp.controller;
     
+    % Concatenate for the legend label
     rl{fi} = [ fp{fi},  ', DM1P: ', num2str(dm1p{fi}), ...
         ', DM2P: ', num2str(dm2p{fi}), ', BW: ', num2str(mp.fracBW), ', ', mp.controller ,'']
     
     
     
-    % switch bwVec(fi)
-    %     case 1
-    
     if strcmp(mp.controller,'plannedEFC')
-        semilogy(0:mp.Nitr,out.InormHist,'linewidth',3);
-    else
-        semilogy(0:mp.Nitr,out.InormHist,'linewidth',3,'linestyle','--');
+        semilogy(0:mp.Nitr,out.InormHist,'linewidth',3,'color',ColorOdrCustom(plan_count,:));
+        plan_count = plan_count + 1;
+    elseif dm1p{fi} > 0
+        semilogy(0:mp.Nitr,out.InormHist,'linewidth',3,'linestyle','--','color',ColorOdrCustom(grid_count,:));
+        grid_count = grid_count + 1;
+    elseif dm1p{fi} == 0
+        semilogy(0:mp.Nitr,out.InormHist,'linewidth',3,'linestyle','--','color',[0.41 0.41 0.41]); 
     end
-    
-    
-    %     case 10
-    %         semilogy(0:mp.Nitr,out.InormHist,'--','linewidth',3);
-    % end
-    
     
     hold all
 end
@@ -112,18 +115,6 @@ end
 hold off
 
 
-% load(full_file1_path);
-% rl1 = mp.runLabel(1:20);
-%
-% figure;
-% semilogy(0:mp.Nitr,out.InormHist,'linewidth',3);
-%
-% load(full_file2_path);
-% rl2 = mp.runLabel(1:20);
-%
-% hold all
-% semilogy(0:mp.Nitr,out.InormHist,'linewidth',3);
-% hold off
 %
 grid on
 
@@ -148,10 +139,18 @@ set(gca,'fontsize',16);
 xlim([0 18])
 ylim([1e-12 1e-4 ])
 
-% ColorOdrDef = get(gca,'ColorOrder'); %7x3 RGB array
-% %define your custom color order
-% ColorOdrCustom = parula(length(TrialNumVec));
-% set(gca,'ColorOrder',ColorOdrCustom);
+% Gets current color order
+ColorOdrDef = get(gca,'ColorOrder'); %7x3 RGB array
+
+% Define your custom color order from the parula colormap
+%ColorOdrCustom = parula(length(TrialNumVec));
+
+
+%set(gca,'ColorOrder',ColorOdrCustom);
+
+
+
+
 
 % Saves as a png
 if save_flag
