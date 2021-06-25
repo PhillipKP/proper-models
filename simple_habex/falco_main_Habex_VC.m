@@ -27,7 +27,8 @@
 % TrialNum is an integer for naming the final *.mat file
 % dm1 and dm2 are structs which contains fields like .pinned and .Vpinned 
 
-function [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, dm1, dm2, controller, save_dir)
+function [mp, out] = falco_main_Habex_VC(Nitr, SeriesNum, TrialNum, ...
+    dm1, dm2, controller, save_dir, bw, nsbp, nwpsbp)
 
 
 
@@ -73,9 +74,9 @@ mp.TrialNum = TrialNum;
 % clear temp
 
 %--DEBUGGING
-mp.fracBW = 0.1;       %--fractional bandwidth of the whole bandpass (Delta lambda / lambda0)
-mp.Nsbp = 3;            %--Number of sub-bandpasses to divide the whole bandpass into for estimation and control
-mp.Nwpsbp = 3; 
+mp.fracBW = bw;       %--fractional bandwidth of the whole bandpass (Delta lambda / lambda0)
+mp.Nsbp = nsbp;            %--Number of sub-bandpasses to divide the whole bandpass into for estimation and control
+mp.Nwpsbp = nwpsbp; 
 mp.flagParfor = false; %--whether to use parfor for Jacobian calculation
 
 %% Step 3b: Obtain the phase retrieval phase.
@@ -207,5 +208,23 @@ mp.P1.compact.mask = ones(size(mp.P1.compact.mask));
 
 [mp, out] = falco_wfsc_loop(mp, out);
 
+
+%--Noll zernike modes for which to compute sensitivities
+mp.eval.indsZnoll = [2, 3];
+ 
+%--Amount of RMS Zernike mode used to calculate aberration sensitivities 
+% [meters]. WFIRST CGI uses 1e-9, and LUVOIR and HabEx use 1e-10. 
+mp.full.ZrmsVal = 1e-10; 
+ 
+%--Annuli to compute 1nm RMS Zernike sensitivities over.
+% Columns are [inner radius, outer radius]. One row per annulus.
+mp.eval.Rsens = [3, 5; ...
+         3, 20];  
+       
+%--Compute the sensitivities. Needs to occur after calling
+% falco_flesh_out_workspace(), or after re-loading the config file.
+% The output has Nzernikes rows (one for each value in mp.eval.indsZnoll)
+% and Nannuli columns (one for each row of mp.eval.Rsens).
+sensArray = falco_get_Zernike_sensitivities(mp);
 
 end

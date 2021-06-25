@@ -72,6 +72,10 @@ mp.logGmin = -6;  % 10^(mp.logGmin) used on the intensity of DM1 and DM2 Jacobia
 mp.jac.zerns = 1;  %--Which Zernike modes to include in Jacobian. Given as the max Noll index. Always include the value "1" for the on-axis piston mode.
 mp.jac.Zcoef = 1e-9*ones(size(mp.jac.zerns)); %--meters RMS of Zernike aberrations. (piston value is reset to 1 later)
 
+
+
+     
+%%
 %--Zernikes to compute sensitivities for
 mp.eval.indsZnoll = []; %--Noll indices of Zernikes to compute values for
 %--Annuli to compute 1nm RMS Zernike sensitivities over. Columns are [inner radius, outer radius]. One row per annulus.
@@ -426,5 +430,9 @@ mp.full.vortexCharge = mp.F3.VortexCharge;
 
 %% Turn on SVD plotting for regularization kicks
 mp.flagSVD = true;
+
+
+%%
+
 
 end
