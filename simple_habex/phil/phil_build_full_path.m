@@ -7,7 +7,7 @@ function [ffpath] = phil_build_full_path(SeriesNum, TrialNum, varargin)
 % Defaults
 mp.coro = 'vortex';
 mp.whichPupil = 'simple';
-mp.controller = 'gridsearchEFC';
+
 mp.dm_ind = [1 2];
 mp.dm1.Nact = 64;
 mp.d_dm1_dm2 = 0.32;
@@ -43,6 +43,10 @@ for icav = 1:length(varargin)
                 varargin{icav + 1};
                 mp.fracBW = varargin{icav + 1};
                 
+            case {'controller','con'}
+                varargin{icav + 1};
+                mp.controller = varargin{icav + 1};
+                
                 
         end
         
@@ -50,7 +54,12 @@ for icav = 1:length(varargin)
     
 end
 
-
+switch SeriesNum
+    case 0
+        folder_name = 'pinned_actuators'
+    case 1
+        folder_name = 'pinned_scheduled'
+end
 
 mp.runLabel = ['Series',num2str(SeriesNum,'%04d'),'_Trial',num2str(TrialNum,'%04d_'),...
     mp.coro,'_',mp.whichPupil,'_',num2str(numel(mp.dm_ind)),'DM',num2str(mp.dm1.Nact),'_z',num2str(mp.d_dm1_dm2),...
@@ -60,9 +69,9 @@ mp.runLabel = ['Series',num2str(SeriesNum,'%04d'),'_Trial',num2str(TrialNum,'%04
 
 
 if (~ismac) && (isunix)
-    path_to_ws = '/home/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
+    path_to_ws = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/', folder_name, '/'];
 elseif (ismac)
-    path_to_ws = '/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/';
+    path_to_ws = ['/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/', folder_name, '/'];
 end
 % The full file path
 ffpath = [path_to_ws, mp.runLabel, '_all.mat'];
