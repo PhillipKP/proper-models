@@ -1,12 +1,19 @@
 function full_path = phil_build_full_path_2(SeriesNum, TrialNum)
 
 
+if ~(ismac)
+    prepath = '/home/'
+elseif ismac
+    prepath = '/Volumes/'
+end
+    
+
 switch SeriesNum 
     
     case 0
-        mat_dir_path = '/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/'
+        mat_dir_path = [prepath,'poon/dst_sim/proper-models/simple_habex/workspaces/pinned_actuators/']
     case 1
-        mat_dir_path = '/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/pinned_scheduled/'
+        mat_dir_path = [prepath,'poon/dst_sim/proper-models/simple_habex/workspaces/pinned_scheduled/']
         
 end
    

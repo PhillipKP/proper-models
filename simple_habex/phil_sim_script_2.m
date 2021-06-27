@@ -6,19 +6,19 @@ clearvars
 %- The following variables are for monte carlo simulations
 SeriesNum = 0001;
 
-Nitr = 2;
+Nitr = 30;
 
 sim_type = 'scheduled'
 
 num_isolated_pinned_acts = 1;
 
 save_dir = 'pinned_scheduled'
-%controller = 'plannedEFC'
-controller = 'gridsearchEFC'
+controller = 'plannedEFC'
+%controller = 'gridsearchEFC'
 
 bw = 0.10;
-nsbp = 1;
-nwpsbp = 1;
+nsbp = 3;
+nwpsbp = 3;
 
 % Generate 10 random actuator locations
 switch lower(sim_type)
@@ -45,10 +45,10 @@ switch lower(sim_type)
 end
 
 
-count1 = 5
+count1 = 1
 
 
-for TrialNum = 20
+for TrialNum = 22:26
     
     if contains(sim_type,'scheduled')
         dm1.pinned = dm1.schedule(1:count1)
