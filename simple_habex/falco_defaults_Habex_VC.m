@@ -99,8 +99,8 @@ mp.controller = 'gridsearchEFC';
 
 % % % GRID SEARCH EFC DEFAULTS     
 %--WFSC Iterations and Control Matrix Relinearization
-mp.Nitr = 3; %--Number of estimation+control iterations to perform
-mp.relinItrVec = 1; %1:mp.Nitr;  %--Which correction iterations at which to re-compute the control Jacobian
+mp.Nitr = 30; %--Number of estimation+control iterations to perform
+mp.relinItrVec = 1:mp.Nitr;  %--Which correction iterations at which to re-compute the control Jacobian
 mp.dm_ind = [1 2]; %--Which DMs to use
 
 
@@ -172,7 +172,7 @@ mp.Fend.FOV = 30; %--half-width of the field of view in both dimensions [lambda0
 
 %--Correction and scoring region definition
 mp.Fend.corr.Rin  = 2.0;   % inner radius of dark hole correction region [lambda0/D]
-mp.Fend.corr.Rout = 26;  % outer radius of dark hole correction region [lambda0/D]
+mp.Fend.corr.Rout = 20;  % outer radius of dark hole correction region [lambda0/D]
 mp.Fend.corr.ang  = 180;  % angular opening of dark hole correction region [degrees]
 
 mp.Fend.score.Rin  = mp.Fend.corr.Rin;  % inner radius of dark hole scoring region [lambda0/D]

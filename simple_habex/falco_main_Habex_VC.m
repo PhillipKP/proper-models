@@ -16,17 +16,10 @@
 % In falco_defaults_Habex_VC.m, change the value of mp.full.map_dir to be
 % for your computer.
 % -------------------------------------------------------------------------
-clear
+clearvars
 
-%global falco_est_perfect_Efield_with_Zernikes_count
-%global falco_get_summed_image_count 
-global falco_get_sim_sbp_image_count
-
-
-%falco_est_perfect_Efield_with_Zernikes_count = 1
-%falco_get_summed_image_count = 1
-falco_get_sim_sbp_image_count = 1
-
+SeriesNum = 2
+TrialNum  = 4
 
 %% Step 1: Define Necessary Paths on Your Computer System
 
@@ -51,8 +44,8 @@ mp.flagParfor = true; %--whether to use parfor for Jacobian calculation
 mp.flagPlot = true;
 
 %--Record Keeping
-mp.SeriesNum = 1;
-mp.TrialNum = 1;
+mp.SeriesNum = SeriesNum;
+mp.TrialNum = TrialNum;
 
 %%--[OPTIONAL] Start from a previous FALCO trial's DM settings
 % fn_prev = 'ws_Series0002_Trial0001_HLC_WFIRST20180103_2DM48_z1_IWA2.7_OWA10_6lams575nm_BW12.5_EFC_30its.mat';
@@ -62,9 +55,9 @@ mp.TrialNum = 1;
 % clear temp
 
 %--DEBUGGING
-mp.fracBW = 0.01;       %--fractional bandwidth of the whole bandpass (Delta lambda / lambda0)
+mp.fracBW = 0.1;       %--fractional bandwidth of the whole bandpass (Delta lambda / lambda0)
 mp.Nsbp = 3;            %--Number of sub-bandpasses to divide the whole bandpass into for estimation and control
-mp.Nwpsbp = 2;
+mp.Nwpsbp = 3;
 mp.flagParfor = false; %--whether to use parfor for Jacobian calculation
 
 %% Step 3b: Obtain the phase retrieval phase.
