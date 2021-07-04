@@ -19,7 +19,13 @@
 clearvars
 
 SeriesNum = 2
-TrialNum  = 4
+TrialNum  = 6
+save_dir = 'noise'
+Nitr = 30
+controller = 'gridsearchEFC'
+
+
+
 
 %% Step 1: Define Necessary Paths on Your Computer System
 
@@ -35,6 +41,13 @@ TrialNum  = 4
 %% Step 2: Load default model parameters
 
 falco_defaults_Habex_VC
+
+%% Step 2.1 Add Paths
+
+phil_add_paths
+
+%% Step 2.2 Overwrite Stuff
+
 
 
 %% Step 3: Overwrite default values as desired

@@ -1,12 +1,26 @@
-function [run] = phil_noise_sim(InputSeriesNum, InputTrialNum, noise_std, varargin)
+function [run] = phil_periodic_sim_all_act(InputSeriesNum, InputTrialNum, amplitude, varargin)
 
 %close all
+%clearvars
 
-% Defaults
+
+run.SeriesNum = InputSeriesNum;
+run.TrialNum  = InputTrialNum;
+run.amplitude = amplitude;
+
+run.start_time = now;
 run.flagPlot = false;
-run.savePlot = false;
-run.num_noise_trials = 10;
-run.computeDelta = false;
+run.savePlot = true;
+run.num_samples = 10;
+
+run.freq = 1;
+run.VtoH = 10e-9;
+
+run.amplitude_meters = run.amplitude * run.VtoH;
+
+
+run.loadFlag = true;
+
 
 for icav = 1:length(varargin)
     
@@ -17,9 +31,9 @@ for icav = 1:length(varargin)
         switch arg_name
             % Allows user to set the title
             
-            case {'num_trials'}
+            case {'num_samples'}
                 
-                run.num_noise_trials = varargin{icav + 1};
+                run.num_samples = varargin{icav + 1};
                 
             case {'vtoh','VtoH','gain'}
                 
@@ -32,11 +46,11 @@ for icav = 1:length(varargin)
                 fpbool = varargin{icav + 1};
                 
                 run.flagPlot = fpbool;
-
+                
             case {'computeDelta','compute_delta','computedelta'}
                 
+                % cdbool must a boolean value
                 cdbool = varargin{icav + 1};
-                
                 run.computeDelta = cdbool;
                 
         end
@@ -44,32 +58,18 @@ for icav = 1:length(varargin)
     
 end
 
-
-
-run.SeriesNum = InputSeriesNum;
-run.TrialNum  = InputTrialNum;
-
-
-run.start_time = now;
-
-
-run.noise_std = noise_std;
-
-run.noise_std_in_meters = run.noise_std * 1e-9;
-
-
-
-run.loadFlag = true;
-
-
-
-
 %% Initial File and Directory Handling
 
 run.label = ['Series', num2str(run.SeriesNum,'%04.f'), '_Trial', num2str(run.TrialNum,'%04.f') ''];
 
-run.path.png = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/noise/png/' run.label '/'];
-run.path.ws = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/noise/'];
+if isunix
+    run.path.png = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/noise/png/' run.label '/'];
+    run.path.ws = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/noise/'];
+else
+    run.path.png = ['/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/noise/png/' run.label '/'];
+    run.path.ws = ['/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/noise/'];
+    
+end
 
 if ~exist(run.path.png)
     mkdir(run.path.png);
@@ -78,7 +78,6 @@ end
 
 
 %% Information for the save file to load
-
 Itr = 8;
 SeriesNum = 2;
 TrialNum = 6;
@@ -86,12 +85,16 @@ save_dir = 'noise';
 
 
 
+
 %phil_add_paths; % Gets the mp.path.itr
 
 itr_name = ['Series', num2str(SeriesNum,'%04.f'), 'Trial', num2str(TrialNum,'%04.f'), '_Itr_', num2str(Itr)];
 
-path_to_file = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/noise/itr/Series', num2str(SeriesNum,'%04.f'), '_Trial' num2str(TrialNum,'%04.f') '/'];
-
+if ismac
+    path_to_file = ['/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/noise/itr/Series', num2str(SeriesNum,'%04.f'), '_Trial' num2str(TrialNum,'%04.f') '/'];
+else
+    path_to_file = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/noise/itr/Series', num2str(SeriesNum,'%04.f'), '_Trial' num2str(TrialNum,'%04.f') '/'];
+end
 itr_file = [path_to_file itr_name '.mat'];
 
 load(itr_file,'mp','out');
@@ -102,44 +105,77 @@ origDm1FlatMap = mp.full.dm1.flatmap;
 
 
 
-summedImage_tot = zeros(182,182);
 
+%- Compute the NI that correspond to perfect DMs at this FALCO iteration
 if run.computeDelta
-    % Compute the NI that correspond to perfect DMs at this FALCO iteration
+    
     summedImage = 0;
     for iSubband = 1:mp.Nsbp
         subbandImage = falco_get_sim_sbp_image(mp, iSubband);
         summedImage = summedImage +  mp.sbp_weights(iSubband)*subbandImage;
     end
     run.original_ni =  mean(summedImage(mp.Fend.corr.maskBool));
+    disp(['Original NI: ' num2str(run.original_ni) ''])
 end
 
-% Manually change the gain to 10 nm per volt
+summedImage_tot = zeros(182,182);
+
+%% Overwrite Gain
+
 mp.dm1.VtoH = run.VtoH*ones(mp.dm1.Nact);
 mp.dm2.VtoH = run.VtoH*ones(mp.dm2.Nact);
 
 %% Begin looping
-for nitr = 1: run.num_noise_trials
+
+
+
+tl = linspace(0,1,run.num_samples);
+
+
+
+% Allocate memory to store the stack of voltage commands
+run.dm1.stack = zeros(mp.dm1.Nact, mp.dm1.Nact, run.num_samples);
+run.dm2.stack = zeros(mp.dm2.Nact, mp.dm2.Nact, run.num_samples);
+
+
+% 2D matrix
+run.dm1.init_phase = 2*pi*rand(mp.dm1.Nact);
+run.dm2.init_phase = 2*pi*rand(mp.dm2.Nact);
+
+for titr = 1: run.num_samples
     
+    t = tl(titr);
     
+    % The voltage that will be added to the original voltage on DM1 and DM2
+    dm1_volt_val = run.amplitude*sin(2*pi*run.freq*t + run.dm1.init_phase);
+    dm2_volt_val = run.amplitude*sin(2*pi*run.freq*t + run.dm2.init_phase);
     
-    mp.dm1.V = origDm1V + run.noise_std*randn(64,64);
-    mp.dm2.V = origDm2V + run.noise_std*randn(64,64);
+    %
+    run.dm1.stack(:,:,titr) = dm1_volt_val;
+    run.dm2.stack(:,:,titr) = dm2_volt_val;
+    
+    % Added voltage to the original voltage
+    mp.dm1.V = origDm1V + dm1_volt_val;
+    mp.dm2.V = origDm2V + dm2_volt_val;
     
     if run.flagPlot
+        
         figure(100);
         subplot(1,2,1);
         imagesc(mp.dm1.V); colorbar;
-        title('mp.dm1.V');
+        title(['mp.dm1.V Phase Sample', num2str(t) '']);
         axis equal; axis tight;
         subplot(1,2,2);
         imagesc(mp.dm2.V); colorbar;
         axis equal; axis tight;
-        title('mp.dm2.V');
+        title(['mp.dm2.V Phase Sample', num2str(t) '']);
+        
+        
         
         if run.savePlot
-            saveas(gcf, [run.path.png run.label '_DeltaV_Itr' num2str(nitr) '.png']);
+            saveas(gcf, [run.path.png run.label '_DeltaV_Itr' num2str(titr) '.png']);
         end
+        
     end
     
     if any(mp.dm_ind == 1)
@@ -153,27 +189,39 @@ for nitr = 1: run.num_noise_trials
     end
     
     if run.flagPlot
-        figure(101);
-        subplot(1,2,1)
+        
+        f = figure(101);
+        p = uipanel('Parent',f,'BorderType','none');
+        p.Title = ['DM Surf. Phase = ', num2str(t), ' (2*pi)'];
+        p.TitlePosition = 'centertop';
+        p.FontSize = 12;
+        p.FontWeight = 'bold';
+        
+        
+        %figure(101);
+        subplot(1,2,1,'Parent',p)
         imagesc(mp.dm1.surfM/1e-9); colorbar;colorbar;
         title('DM1 Surface [nm]')
         axis equal; axis tight;
-        subplot(1,2,2)
+        subplot(1,2,2,'Parent',p)
         imagesc(mp.dm2.surfM/1e-9); colorbar;
         title('DM2 Surface [nm]')
         axis equal; axis tight;
-        set(gcf,'position',[1440 902 810 436])
-        
+        %set(gcf,'position',[1440 902 810 436])
+        set(gcf,'position',[181 217 810 435])
         
         if run.savePlot
-            saveas(gcf, [run.path.png run.label '_Instant_DMSurf_Itr' num2str(nitr) '.png']);
+            saveas(gcf, [run.path.png run.label '_Instant_DMSurf_Itr' num2str(titr) '.png']);
         end
     end
     
     % summedImage is
     summedImage = 0;
     for iSubband = 1:mp.Nsbp
+        
+        
         subbandImage = falco_get_sim_sbp_image(mp, iSubband);
+        
         summedImage = summedImage +  mp.sbp_weights(iSubband)*subbandImage;
     end
     
@@ -185,21 +233,21 @@ for nitr = 1: run.num_noise_trials
     % Plot the local NI
     figure(102);
     imagesc(log10(summedImage)); colorbar;
-    title(['Image for Noise Itr ', num2str(nitr), '. NI = ', num2str(itr_ni), ''])
+    title(['Image for Noise Itr ', num2str(titr), '. NI = ', num2str(itr_ni), ''])
     axis equal; axis tight; colorbar;
     drawnow;
     if run.savePlot
-        saveas(gcf, [run.path.png run.label '_Instant_DH_Itr' num2str(nitr) '.png'])
+        saveas(gcf, [run.path.png run.label '_Instant_DH_Itr' num2str(titr) '.png'])
     end
     
     % Perform a running sum
     summedImage_tot = summedImage_tot + summedImage;
     
     % Calculate the current avg NI
-    curr_avg_image = 1/nitr * summedImage_tot;
+    curr_avg_image = 1/titr * summedImage_tot;
     curr_avg_NI = mean(curr_avg_image(mp.Fend.corr.maskBool));
     
-    disp(['Itr: ', num2str(nitr) '  The NI for this noise trial is: ', num2str(itr_ni), '.  Avg NI: ', num2str(curr_avg_NI) ''])
+    disp(['Itr: ', num2str(titr) '  The NI for this time sample is: ', num2str(itr_ni), '.  Avg NI: ', num2str(curr_avg_NI) ''])
     
     
 end
@@ -207,7 +255,7 @@ end
 %% Process noise trials
 
 % Average
-run.avg_img = (1/run.num_noise_trials) * summedImage_tot;
+run.avg_img = (1/run.num_samples) * summedImage_tot;
 
 % Compute NI
 run.avg_ni = mean(run.avg_img(mp.Fend.corr.maskBool));
@@ -220,11 +268,12 @@ if run.computeDelta
     disp(['The Delta NI is ', num2str(run.delta_ni), ' '])
 end
 
+
 if run.flagPlot
     % Plot the local NI
     figure(104);
     imagesc(log10(run.avg_img)); colorbar;
-    title({['Averaged Image Over ', num2str(run.num_noise_trials), ' Noise Trials.'],['The Average NI is ', num2str(run.avg_ni), '']})
+    title({['Averaged Image Over ', num2str(run.num_samples), ' Noise Trials.'],['The Average NI is ', num2str(run.avg_ni), '']})
     axis equal; axis tight; colorbar;
     drawnow;
     
@@ -232,7 +281,25 @@ if run.flagPlot
         saveas(gcf, [run.path.png run.label '_Mean_DH.png'])
     end
     
+    
+    figure(105);
+
+    hold all
+
+    for ri = 1:mp.dm1.Nact
+        for ci = 1:mp.dm1.Nact
+            plot(tl, squeeze(run.dm1.stack(ri,ci,:)))
+        end
+    end
+    hold off
+    if run.savePlot
+        saveas(gcf, [run.path.png run.label '_DM1_Volt_Vals.png'])
+    end
+
+
 end
+
+
 
 run.end_time = now;
 

@@ -95,11 +95,11 @@ mp.maxAbsdV = 1000;     %--Max +/- delta voltage step for each actuator for DMs 
 % Controller options: 
 %  - 'gridsearchEFC' for EFC as an empirical grid search over tuning parameters
 %  - 'plannedEFC' for EFC with an automated regularization schedule
-mp.controller = 'gridsearchEFC';
+mp.controller = controller;
 
 % % % GRID SEARCH EFC DEFAULTS     
 %--WFSC Iterations and Control Matrix Relinearization
-mp.Nitr = 30; %--Number of estimation+control iterations to perform
+mp.Nitr = Nitr; %--Number of estimation+control iterations to perform
 mp.relinItrVec = 1:mp.Nitr;  %--Which correction iterations at which to re-compute the control Jacobian
 mp.dm_ind = [1 2]; %--Which DMs to use
 
@@ -122,7 +122,7 @@ mp.dm2.inf_sign = '+';
 
 %--DM1 parameters
 mp.dm1.Nact = 64;               % # of actuators across DM array
-mp.dm1.VtoH = 1e-9*ones(mp.dm1.Nact);  % gains of all actuators [nm/V of free stroke]
+mp.dm1.VtoH = 10e-9*ones(mp.dm1.Nact);  % gains of all actuators [nm/V of free stroke]
 mp.dm1.xtilt = 0;               % for foreshortening. angle of rotation about x-axis [degrees]
 mp.dm1.ytilt = 0;               % for foreshortening. angle of rotation about y-axis [degrees]
 mp.dm1.zrot = 0;                % clocking of DM surface [degrees]
@@ -132,7 +132,7 @@ mp.dm1.edgeBuffer = 1;          % max radius (in actuator spacings) outside of b
 
 %--DM2 parameters
 mp.dm2.Nact = 64;               % # of actuators across DM array
-mp.dm2.VtoH = 1e-9*ones(mp.dm1.Nact);  % gains of all actuators [nm/V of free stroke]
+mp.dm2.VtoH = 10e-9*ones(mp.dm1.Nact);  % gains of all actuators [nm/V of free stroke]
 mp.dm2.xtilt = 0;               % for foreshortening. angle of rotation about x-axis [degrees]
 mp.dm2.ytilt = 0;               % for foreshortening. angle of rotation about y-axis [degrees]
 mp.dm2.zrot = 0;                % clocking of DM surface [degrees]
@@ -216,7 +216,7 @@ mp.full.cor_type = 'vortex';
 
 if ispc; mp.full.map_dir = 'C:\Users\poon\Documents\dst_sim\proper-models\simple_habex\maps\'; end
 if ismac; mp.full.map_dir = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/maps_dir/'; end
-
+if (isunix && ~ismac); mp.full.map_dir = '/home/poon/dst_sim/proper-models/simple_habex/maps_dir/'; end
 
 mp.full.gridsize = 1024; % # of points across in PROPER model 
 
