@@ -17,7 +17,11 @@ for fi = 1:length(TrialVec)
     
     load(path.full)
    
+    
+    
     amp_list = [amp_list run.amplitude];
+    
+    
     
     avg_ni_list = [avg_ni_list run.avg_ni];
     

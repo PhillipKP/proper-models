@@ -1,3 +1,4 @@
+clear all
 
 num_samples = 10;
 run.freq = 1;
@@ -62,7 +63,7 @@ for t = linspace(0,1,num_samples)
     
     subplot(1,3,2)
     imagesc(mp.dm1.surfM / (1e-9))
-    title('Corrupted DM1 (nm) ')
+    title('Corrupted DM1 at one time sample (nm) ')
     axis equal; axis tight;
     colorbar;
     set(gca,'fontsize',18)

@@ -57,13 +57,13 @@ title({'Delta NI vs Noise Std','with starting NI=8.6e-12. 100 Noise Trials'})
 grid on
 set(gca,'fontsize',16)
 
-
-figure;
-plot(std_list / VtoH, avg_ni_list,'linewidth',3)
-xlabel('Noise Std [x10 nm]')
-ylabel('Mean NI after Noise Added')
-title({'Mean NI vs Noise Std','with starting NI=8.6e-12. 100 Noise Trials'})
-grid on
-set(gca,'fontsize',16)
+% 
+% figure;
+% plot(std_list / VtoH, avg_ni_list,'linewidth',3)
+% xlabel('Noise Std [x10 nm]')
+% ylabel('Mean NI after Noise Added')
+% title({'Mean NI vs Noise Std','with starting NI=8.6e-12. 100 Noise Trials'})
+% grid on
+% set(gca,'fontsize',16)
 
 end
