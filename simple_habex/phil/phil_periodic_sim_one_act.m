@@ -16,6 +16,10 @@ run.num_samples = 10;
 run.freq = 1;
 run.VtoH = 10e-9;
 
+if ismac
+    run.map_dir = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/maps_dir/';
+end
+
 run.amplitude_meters = run.amplitude * 1e-9;
 
 
@@ -62,8 +66,13 @@ end
 
 run.label = ['Series', num2str(run.SeriesNum,'%04.f'), '_Trial', num2str(run.TrialNum,'%04.f') ''];
 
-run.path.png = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/noise/png/' run.label '/'];
-run.path.ws = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/noise/'];
+if ismac
+    run.path.png = ['/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/noise/png/' run.label '/'];
+    run.path.ws = ['/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/noise/'];
+else
+    run.path.png = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/noise/png/' run.label '/'];
+    run.path.ws = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/noise/'];
+end
 
 if ~exist(run.path.png)
     mkdir(run.path.png);
@@ -77,16 +86,15 @@ SeriesNum = 2;
 TrialNum = 6;
 save_dir = 'noise';
 
-
-
-
-
-
 %phil_add_paths; % Gets the mp.path.itr
 
 itr_name = ['Series', num2str(SeriesNum,'%04.f'), 'Trial', num2str(TrialNum,'%04.f'), '_Itr_', num2str(Itr)];
 
-path_to_file = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/noise/itr/Series', num2str(SeriesNum,'%04.f'), '_Trial' num2str(TrialNum,'%04.f') '/'];
+if ismac
+    path_to_file = ['/Volumes/poon/dst_sim/proper-models/simple_habex/workspaces/noise/itr/Series', num2str(SeriesNum,'%04.f'), '_Trial' num2str(TrialNum,'%04.f') '/'];
+else
+    path_to_file = ['/home/poon/dst_sim/proper-models/simple_habex/workspaces/noise/itr/Series', num2str(SeriesNum,'%04.f'), '_Trial' num2str(TrialNum,'%04.f') '/'];
+end
 
 itr_file = [path_to_file itr_name '.mat'];
 
@@ -97,6 +105,13 @@ origDm2V = mp.dm2.V;
 origDm1FlatMap = mp.full.dm1.flatmap;
 
 
+%- Overwrite the map_dir if on Phillip's Macbook Pro
+if ismac
+    mp.full.map_dir = run.map_dir;
+end
+
+
+%%
 
 
 %- Compute the NI that correspond to perfect DMs at this FALCO iteration
