@@ -9,7 +9,7 @@ run.TrialNum  = InputTrialNum;
 run.amplitude = amplitude;
 
 run.start_time = now;
-run.flagPlot = false;
+run.flagPlot = true;
 run.savePlot = true;
 run.num_samples = 10;
 
@@ -18,7 +18,7 @@ run.VtoH = 10e-9;
 
 run.amplitude_meters = run.amplitude * run.VtoH;
 
-
+run.computeDelta = true;
 run.loadFlag = true;
 
 
@@ -109,14 +109,58 @@ origDm1FlatMap = mp.full.dm1.flatmap;
 %- Compute the NI that correspond to perfect DMs at this FALCO iteration
 if run.computeDelta
     
-    summedImage = 0;
+    orig_summedImage = 0;
     for iSubband = 1:mp.Nsbp
         subbandImage = falco_get_sim_sbp_image(mp, iSubband);
-        summedImage = summedImage +  mp.sbp_weights(iSubband)*subbandImage;
+        orig_summedImage = orig_summedImage +  mp.sbp_weights(iSubband)*subbandImage;
     end
-    run.original_ni =  mean(summedImage(mp.Fend.corr.maskBool));
+    
+    % Store the original NI in the dark hole
+    run.orig_img = orig_summedImage;
+    
+    run.original_ni =  mean(orig_summedImage(mp.Fend.corr.maskBool));
     disp(['Original NI: ' num2str(run.original_ni) ''])
 end
+
+
+% Plot the NI for the original DM voltage
+if run.flagPlot
+  
+    figure(104);
+    imagesc(mp.Fend.etasDL, mp.Fend.xisDL, log10(orig_summedImage),[-17 -9]); colorbar;
+    xlabel('\lambda/D')
+    ylabel('\lambda/D')
+    
+    title(['NI with uncorrupted DMs [log10 scale]'])
+    axis equal; axis tight; colorbar;
+    drawnow;
+    
+    if run.savePlot
+        saveas(gcf, [run.path.png run.label '_Uncorrupted_NI.png'])
+    end
+    
+end
+
+% Plot the original DM surf for the original DM voltage
+if run.flagPlot
+  
+    
+    run.dm1.orig_surfM = falco_gen_dm_surf(mp.dm1, mp.dm1.dx, mp.dm1.NdmPad);
+    run.dm2.orig_surfM= falco_gen_dm_surf(mp.dm2, mp.dm2.dx, mp.dm2.NdmPad);
+     
+    figure(108);
+    imagesc( run.dm1.orig_surfM/(1e-9) ); colorbar;
+    
+    title(['Original DM1 (nm)'])
+    axis equal; axis tight; colorbar;
+    drawnow;
+    
+    if run.savePlot
+        saveas(gcf, [run.path.png run.label '_Original_DM1.png'])
+    end
+    
+end
+
 
 summedImage_tot = zeros(182,182);
 
@@ -161,11 +205,11 @@ for titr = 1: run.num_samples
     if run.flagPlot
         
         figure(100);
-        subplot(1,2,1);
         imagesc(mp.dm1.V); colorbar;
         title(['mp.dm1.V Phase Sample', num2str(t) '']);
         axis equal; axis tight;
-        subplot(1,2,2);
+       
+        figure(101);
         imagesc(mp.dm2.V); colorbar;
         axis equal; axis tight;
         title(['mp.dm2.V Phase Sample', num2str(t) '']);
@@ -190,29 +234,43 @@ for titr = 1: run.num_samples
     
     if run.flagPlot
         
-        f = figure(101);
-        p = uipanel('Parent',f,'BorderType','none');
-        p.Title = ['DM Surf. Phase = ', num2str(t), ' (2*pi)'];
-        p.TitlePosition = 'centertop';
-        p.FontSize = 12;
-        p.FontWeight = 'bold';
         
         
-        %figure(101);
-        subplot(1,2,1,'Parent',p)
+        disp(titr)
+        
+        figure;
         imagesc(mp.dm1.surfM/1e-9); colorbar;colorbar;
-        title('DM1 Surface [nm]')
+        title('Corrupted DM1 Surface [nm]')
         axis equal; axis tight;
-        subplot(1,2,2,'Parent',p)
-        imagesc(mp.dm2.surfM/1e-9); colorbar;
-        title('DM2 Surface [nm]')
-        axis equal; axis tight;
-        %set(gcf,'position',[1440 902 810 436])
-        set(gcf,'position',[181 217 810 435])
-        
         if run.savePlot
-            saveas(gcf, [run.path.png run.label '_Instant_DMSurf_Itr' num2str(titr) '.png']);
+            saveas(gcf, [run.path.png run.label '_Corrupt_DM1_Surf_Itr' num2str(titr) '.png']);
         end
+        
+        figure;
+        imagesc(mp.dm2.surfM/1e-9); colorbar;
+        title('Corrupted DM2 Surface [nm]')
+        axis equal; axis tight;
+        if run.savePlot
+            saveas(gcf, [run.path.png run.label '_Corrupt_DM2_Surf_Itr' num2str(titr) '.png']);
+        end
+        
+        
+        figure;
+        imagesc( ( mp.dm1.surfM - run.dm1.orig_surfM) /(1e-12)); colorbar;
+        title('Difference DM1 Surface [pm]')
+        axis equal; axis tight;
+        if run.savePlot
+           saveas(gcf, [run.path.png run.label '_Diff_DM1_Surf_Itr' num2str(titr) '.png']);
+        end
+        
+        figure;
+        imagesc( ( mp.dm2.surfM - run.dm2.orig_surfM) / (1e-12)); colorbar;
+        title('Difference DM2 Surface [pm]')
+        axis equal; axis tight;
+        if run.savePlot
+            saveas(gcf, [run.path.png run.label '_Diff_DM2_Surf_Itr' num2str(titr) '.png']);
+        end
+   
     end
     
     % summedImage is
@@ -231,7 +289,7 @@ for titr = 1: run.num_samples
     
     
     % Plot the local NI
-    figure(102);
+    figure(105);
     imagesc(log10(summedImage)); colorbar;
     title(['Image for Noise Itr ', num2str(titr), '. NI = ', num2str(itr_ni), ''])
     axis equal; axis tight; colorbar;
@@ -270,10 +328,19 @@ end
 
 
 if run.flagPlot
+    
     % Plot the local NI
+    
+    
     figure(104);
-    imagesc(log10(run.avg_img)); colorbar;
-    title({['Averaged Image Over ', num2str(run.num_samples), ' Noise Trials.'],['The Average NI is ', num2str(run.avg_ni), '']})
+    imagesc(mp.Fend.etasDL, mp.Fend.xisDL, log10(run.avg_img ),[-17 -9]); colorbar;
+    xlabel('\lambda/D')
+    ylabel('\lambda/D')
+    
+    %title({['Averaged Image Over ', num2str(run.num_samples), ' Noise Trials. [Log10]'],['The Average NI is ', num2str(run.avg_ni), '']})
+   
+    title(['Corrupted DMs. Averaged NI. [log10 scale]'])
+   
     axis equal; axis tight; colorbar;
     drawnow;
     
@@ -282,10 +349,29 @@ if run.flagPlot
     end
     
     
+    
+    figure(107)
+    imagesc(mp.Fend.etasDL, mp.Fend.xisDL, log10(abs(run.avg_img - run.orig_img)), [-17 -9]); colorbar;
+    title('Difference NI [log10 scale]')
+    xlabel('\lambda/D')
+    ylabel('\lambda/D')
+    
+    %title({['Averaged Image Over ', num2str(run.num_samples), ' Noise Trials. [Log10]'],['The Average NI is ', num2str(run.avg_ni), '']})
+   
+    title(['Difference NI. [log10 scale]'])
+   
+    axis equal; axis tight; colorbar;
+    drawnow;
+    
+    if run.savePlot
+        saveas(gcf, [run.path.png run.label '_Diff_DH.png'])
+    end
+    
+    
     figure(105);
-
+    
     hold all
-
+    
     for ri = 1:mp.dm1.Nact
         for ci = 1:mp.dm1.Nact
             plot(tl, squeeze(run.dm1.stack(ri,ci,:)))
@@ -295,8 +381,8 @@ if run.flagPlot
     if run.savePlot
         saveas(gcf, [run.path.png run.label '_DM1_Volt_Vals.png'])
     end
-
-
+    
+    
 end
 
 

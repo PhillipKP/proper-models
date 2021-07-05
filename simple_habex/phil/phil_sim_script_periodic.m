@@ -3,9 +3,9 @@
 
 %count1 = 1
 
-amplitude = 0.0008
+amplitude = 0.0012
 
-TrialNum_Start = 1125
+TrialNum_Start = 1428
 TrialNum_Stop = TrialNum_Start+100
 
 disp(['Simulating Periodic Noise on All Actuators for Amplitude (Volts): ', num2str(amplitude), '']);
