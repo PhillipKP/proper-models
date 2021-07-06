@@ -1,4 +1,4 @@
-function [run] = phil_periodic_sim_all_act(InputSeriesNum, InputTrialNum, amplitude, varargin)
+function [run] = phil_drift_sim_all_act(InputSeriesNum, InputTrialNum, amplitude, varargin)
 
 %close all
 %clearvars
@@ -6,6 +6,8 @@ function [run] = phil_periodic_sim_all_act(InputSeriesNum, InputTrialNum, amplit
 
 run.SeriesNum = InputSeriesNum;
 run.TrialNum  = InputTrialNum;
+
+
 run.amplitude = amplitude;
 
 run.start_time = now;

@@ -1,22 +1,27 @@
 
+clear all; close all; clc;
 
+des_std = 0.00035
 
-des_pv = 0.0040
+TrialNum_Start = 500
+TrialNum_Stop = TrialNum_Start + 99
 
-TrialNum_Start = 100
-TrialNum_Stop = 100
+drift_type = 'std'
 
-disp(['Simulating Browning Motion on All Actuators for PV (Volts): ', num2str(des_pv), '']);
+switch drift_type
+    case 'pv'
+        disp(['Simulating Browning Motion on All Actuators for PV (Volts): ', num2str(des_pv), '']);
+    case 'std'
+        disp(['Simulating Browning Motion on All Actuators for Std (Volts): ', num2str(des_std), '']);
+end
+
 disp(['Starting Trial Number: ', num2str(TrialNum_Start),'']);
 disp(['Stopping Trial Number: ', num2str(TrialNum_Stop),'']);
 
-disp('Paused for 10 Seconds...')
-pause(10)
-
-
+disp('Launching...')
 
 for InputTrialNum = TrialNum_Start:TrialNum_Stop
     
-    [~] = phil_drift_sim(3,InputTrialNum,des_pv,10)    
+    [~] = phil_drift_sim(3, InputTrialNum, 10, 'std', des_std)
    
 end
