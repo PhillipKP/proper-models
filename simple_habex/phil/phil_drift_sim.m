@@ -1,9 +1,9 @@
-function [run] = phil_drift_sim(SeriesNum, TrialNum, dev_pv, num_steps)
+function [run] = phil_drift_sim(SeriesNum, TrialNum, num_steps, drift_type, drift_val)
 
 run.SeriesNum = SeriesNum;
 run.TrialNum = TrialNum;
 
-run.des_pv = dev_pv;
+    
 run.num_steps = num_steps;
 
 % The gain of DM1 and DM2
@@ -11,7 +11,17 @@ run.VtoH = 10e-9;
 
 
 
-run.map_dir = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/maps_dir/'
+switch drift_type
+    case 'pv'
+        run.des_pv = drift_val;
+    case 'std'
+        run.des_std = drift_val;
+end
+
+
+
+
+run.map_dir = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/maps_dir/';
 
 
 %% Initial File and Directory Handling
@@ -74,15 +84,19 @@ disp(['Original NI: ' num2str(run.original_ni) ''])
 
 
 %- Overwrite Gain
-
 mp.dm1.VtoH = run.VtoH*ones(mp.dm1.Nact);
 mp.dm2.VtoH = run.VtoH*ones(mp.dm2.Nact);
 
 
 %- Generate drift
-dm1volt = phil_gen_drift_volt(mp.dm1.Nact, run.des_pv, run.num_steps, false);
-dm2volt = phil_gen_drift_volt(mp.dm1.Nact, run.des_pv, run.num_steps, false);
-
+switch drift_type
+    case 'pv'
+        dm1volt = phil_gen_drift_volt(mp.dm1.Nact, run.des_pv, run.num_steps, false);
+        dm2volt = phil_gen_drift_volt(mp.dm2.Nact, run.des_pv, run.num_steps, false);
+    case 'std'
+        dm1volt = phil_gen_drift_volt_std(mp.dm1.Nact, run.des_std, run.num_steps, false);
+        dm2volt = phil_gen_drift_volt_std(mp.dm2.Nact, run.des_std, run.num_steps, false);
+end
 
 % Initialize for speed
 summedImage_tot = zeros(mp.Fend.Neta, mp.Fend.Nxi);
