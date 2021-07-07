@@ -12,7 +12,7 @@ switch NoiseType
     case 'periodic'
         amplitude_list = [];
     case 'brownian'
-        pv_list = [];
+        std_list = [];
     otherwise
         error('Noise Type not found')
 end
@@ -30,7 +30,7 @@ for fi = 1:length(TrialNumVec)
         case 'periodic'
             amplitude_list = [amplitude_list run.amplitude];
         case 'brownian'
-            pv_list = [pv_list run.des_pv];
+            std_list = [std_list run.des_std];
     end
     
     
@@ -49,7 +49,7 @@ switch NoiseType
         
     case 'brownian'
         
-        data.unique_pv_values = unique(pv_list);
+        data.unique_std_values = unique(std_list);
         
         
 end
