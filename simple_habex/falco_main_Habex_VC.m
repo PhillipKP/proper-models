@@ -24,8 +24,15 @@ save_dir = 'quant'
 Nitr = 30
 controller = 'gridsearchEFC'
 
+%dm1.HminStep = 0
+%dm2.HminStep = 0
 
+dm1.dummy = 0
+dm2.dummy = 0
 
+% Keep it monochromatic for now
+mp.Nsbp = 1
+mp.Nwpsbp = 1
 
 %% Step 1: Define Necessary Paths on Your Computer System
 
@@ -40,7 +47,7 @@ controller = 'gridsearchEFC'
 
 %% Step 2: Load default model parameters
 
-falco_defaults_Habex_VC
+mp = falco_defaults_Habex_VC(mp, Nitr, dm1, dm2, controller)
 
 %% Step 2.1 Add Paths
 

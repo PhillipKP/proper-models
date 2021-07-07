@@ -38,8 +38,8 @@ mp.source_y_offset_norm = 0;  % y location [lambda_c/D] in dark hole at which to
 
 mp.lambda0 = 550e-9;    %--Central wavelength of the whole spectral bandpass [meters]
 mp.fracBW = 0.01;       %--fractional bandwidth of the whole bandpass (Delta lambda / lambda0)
-mp.Nsbp = 1;            %--Number of sub-bandpasses to divide the whole bandpass into for estimation and control
-mp.Nwpsbp = 1;          %--Number of wavelengths to used to approximate an image in each sub-bandpass
+%mp.Nsbp = 1;            %--Number of sub-bandpasses to divide the whole bandpass into for estimation and control
+%mp.Nwpsbp = 1;          %--Number of wavelengths to used to approximate an image in each sub-bandpass
 
 %% Wavefront Estimation
 
@@ -347,15 +347,27 @@ mp.dm2.Vmin = -1000;  % See what f%alco_enforce_dm_constraints does with this
 mp.dm2.Vmax = 1000;
 
 
-mp.dm1.pinned = dm1.pinned;
-mp.dm1.Vpinned = -mp.dm1.biasMap(mp.dm1.pinned) - 250;
+mp.dm1.pinned = [];
+mp.dm1.Vpinned = [];
 
-mp.dm2.pinned = dm2.pinned;
-mp.dm2.Vpinned = -mp.dm2.biasMap(mp.dm2.pinned) - 250;
+mp.dm2.pinned = [];
+mp.dm2.Vpinned = [];
 
+%-- 
 
+% PHIL Changed this code: Pass minimum height to mp struct
 
+if isfield(dm1,'HminStep')
+    mp.dm1.HminStep = dm1.HminStep;
+end
+if isfield(dm2,'HminStep')
+    mp.dm2.HminStep = dm2.HminStep;
+end
 
+mp.dm1.enforce_absolute_voltage = true
+mp.dm2.enforce_absolute_voltage = true
+
+%--
 
 % Check if the pinned actuators are outside the beam
 load('dm1_act_ele.mat','dm1_act_ele')
