@@ -18,9 +18,9 @@
 % -------------------------------------------------------------------------
 clearvars
 
-SeriesNum = 2
-TrialNum  = 6
-save_dir = 'noise'
+SeriesNum = 4
+TrialNum  = 0
+save_dir = 'quant'
 Nitr = 30
 controller = 'gridsearchEFC'
 

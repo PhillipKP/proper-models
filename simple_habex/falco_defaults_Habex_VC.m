@@ -5,11 +5,14 @@
 % -------------------------------------------------------------------------
 % Initialize some structures if they don't already exist
 
+
+function [mp] = falco_defaults_Habex_VC(mp, Nitr, dm1, dm2, controller)
 %% Misc
 
 %--Record Keeping
-mp.SeriesNum = 867;
-mp.TrialNum = 5309;
+
+mp.SeriesNum = 867; %This will get overwritten
+mp.TrialNum = 5310; %This will get overwritten
 
 %--Special Computational Settings
 mp.flagParfor = false;
@@ -22,7 +25,7 @@ mp.centering = 'pixel';
 %--Method of computing core throughput:
 % - 'HMI' for energy within half-max isophote divided by energy at telescope pupil
 % - 'EE' for encircled energy within a radius (mp.thput_radius) divided by energy at telescope pupil
-mp.thput_metric = 'EE'; 
+mp.thput_metric = 'EE';
 mp.thput_radius = 0.7; %--photometric aperture radius [lambda_c/D]. Used ONLY for 'EE' method.
 mp.thput_eval_x = 7; % x location [lambda_c/D] in dark hole at which to evaluate throughput
 mp.thput_eval_y = 0; % y location [lambda_c/D] in dark hole at which to evaluate throughput
@@ -34,9 +37,9 @@ mp.source_y_offset_norm = 0;  % y location [lambda_c/D] in dark hole at which to
 %% Bandwidth and Wavelength Specs
 
 mp.lambda0 = 550e-9;    %--Central wavelength of the whole spectral bandpass [meters]
-mp.fracBW = 0.10;       %--fractional bandwidth of the whole bandpass (Delta lambda / lambda0)
-mp.Nsbp = 3;            %--Number of sub-bandpasses to divide the whole bandpass into for estimation and control
-mp.Nwpsbp = 3;          %--Number of wavelengths to used to approximate an image in each sub-bandpass
+mp.fracBW = 0.01;       %--fractional bandwidth of the whole bandpass (Delta lambda / lambda0)
+mp.Nsbp = 1;            %--Number of sub-bandpasses to divide the whole bandpass into for estimation and control
+mp.Nwpsbp = 1;          %--Number of wavelengths to used to approximate an image in each sub-bandpass
 
 %% Wavefront Estimation
 
@@ -68,16 +71,20 @@ mp.logGmin = -6;  % 10^(mp.logGmin) used on the intensity of DM1 and DM2 Jacobia
 %--Zernikes to suppress with controller
 mp.jac.zerns = 1;  %--Which Zernike modes to include in Jacobian. Given as the max Noll index. Always include the value "1" for the on-axis piston mode.
 mp.jac.Zcoef = 1e-9*ones(size(mp.jac.zerns)); %--meters RMS of Zernike aberrations. (piston value is reset to 1 later)
-    
+
+
+
+     
+%%
 %--Zernikes to compute sensitivities for
 mp.eval.indsZnoll = []; %--Noll indices of Zernikes to compute values for
 %--Annuli to compute 1nm RMS Zernike sensitivities over. Columns are [inner radius, outer radius]. One row per annulus.
-mp.eval.Rsens = [2,3; 3,4; 4,5]; 
+mp.eval.Rsens = [2,3; 3,4; 4,5];
 
 %--Grid- or Line-Search Settings
 mp.ctrl.log10regVec = -6:1/2:-2; %--log10 of the regularization exponents (often called Beta values)
 mp.ctrl.dmfacVec = 1;            %--Proportional gain term applied to the total DM delta command. Usually in range [0.5,1].
-   
+
 %--Spatial pixel weighting
 mp.WspatialDef = [];% [3, 4.5, 3]; %--spatial control Jacobian weighting by annulus: [Inner radius, outer radius, intensity weight; (as many rows as desired)]
 
@@ -86,22 +93,77 @@ mp.dm1.weight = 1;
 mp.dm2.weight = 1;
 
 %--Voltage range restrictions
-mp.dm1.maxAbsV = 1000;  %--Max absolute voltage (+/-) for each actuator [volts] %--NOT ENFORCED YET
-mp.dm2.maxAbsV = 1000;  %--Max absolute voltage (+/-) for each actuator [volts] %--NOT ENFORCED YET
+mp.dm1.maxAbsV = 200;  %--Max absolute voltage (+/-) for each actuator [volts] %--NOT ENFORCED YET
+mp.dm2.maxAbsV = 200;  %--Max absolute voltage (+/-) for each actuator [volts] %--NOT ENFORCED YET
 mp.maxAbsdV = 1000;     %--Max +/- delta voltage step for each actuator for DMs 1 and 2 [volts] %--NOT ENFORCED YET
 
 
 %% Wavefront Control: Controller Specific
-% Controller options: 
+% Controller options:
 %  - 'gridsearchEFC' for EFC as an empirical grid search over tuning parameters
 %  - 'plannedEFC' for EFC with an automated regularization schedule
+
+% %- Grid Search EFC PHILLIP
+
+
+%
+mp.dm_ind = [1 2]; %--Which DMs to use
+% % % % GRID SEARCH EFC DEFAULTS
+% %--WFSC Iterations and Control Matrix Relinearization
+
+% Double check controller is either 'gridsearchEFC' or 'plannedEFC'
+
 mp.controller = controller;
 
-% % % GRID SEARCH EFC DEFAULTS     
-%--WFSC Iterations and Control Matrix Relinearization
-mp.Nitr = Nitr; %--Number of estimation+control iterations to perform
-mp.relinItrVec = 1:mp.Nitr;  %--Which correction iterations at which to re-compute the control Jacobian
-mp.dm_ind = [1 2]; %--Which DMs to use
+control_types = {'gridsearchEFC','plannedEFC'};
+
+if ~any(contains(control_types,controller))
+    error('variable controller not valid')
+end
+
+if strcmp(controller, 'gridsearchEFC')
+    mp.Nitr = Nitr; %--Number of estimation+control iterations to perform
+    mp.relinItrVec = 1:mp.Nitr;  %--Which correction iterations at which to re-compute the control Jacobian
+end
+
+
+
+%- Scheduled EFC PHLLIP
+%--CONTROL SCHEDULE. Columns of mp.ctrl.sched_mat are:
+% Column 1: # of iterations,
+% Column 2: log10(regularization),
+% Column 3: which DMs to use (12, 128, 129, or 1289) for control
+% Column 4: flag (0 = false, 1 = true), whether to re-linearize
+%  at that iteration.
+% Column 5: flag (0 = false, 1 = true), whether to perform an
+%  EFC parameter grid search to find the set giving the best
+%  contrast .
+% The imaginary part of the log10(regularization) in column 2 is
+% replaced for that iteration with the optimal log10(regularization)
+% A row starting with [0, 0, 0, 1...] is for relinearizing only at that time
+if strcmp(controller, 'plannedEFC')
+    
+    mp.ctrl.sched_mat = [...
+        repmat([1, 1j, 12, 1, 1], [5, 1]);... % grid-search EFC for a few iterations
+        [1, -5, 12, 1, 1];... % aggressive
+        repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
+        [1, -5, 12, 1, 1];... % aggressive
+        repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
+        [1, -5.5, 12, 1, 1];... % more aggressive
+        repmat([1, 1j, 12, 1, 1], [2, 1]);... % grid-search EFC to clean up
+        [1, -6, 12, 1, 1];... % aggressive
+        repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+        [1, -6, 12, 1, 1];... % aggressive
+        repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+        [1, -6, 12, 1, 1];... % aggressive
+        repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+        [1, -6, 12, 1, 1];... % aggressive
+        repmat([1, 1j, 12, 1, 1], [3, 1]);... % grid-search EFC to clean up
+        ];
+    
+    [mp.Nitr, mp.relinItrVec, mp.gridSearchItrVec, mp.ctrl.log10regSchedIn, mp.dm_ind_sched] = falco_ctrl_EFC_schedule_generator(mp.ctrl.sched_mat);
+    
+end
 
 
 %% Deformable Mirrors: Influence Functions
@@ -122,7 +184,7 @@ mp.dm2.inf_sign = '+';
 
 %--DM1 parameters
 mp.dm1.Nact = 64;               % # of actuators across DM array
-mp.dm1.VtoH = 10e-9*ones(mp.dm1.Nact);  % gains of all actuators [nm/V of free stroke]
+mp.dm1.VtoH = 1e-9*ones(mp.dm1.Nact);  % gains of all actuators [nm/V of free stroke]
 mp.dm1.xtilt = 0;               % for foreshortening. angle of rotation about x-axis [degrees]
 mp.dm1.ytilt = 0;               % for foreshortening. angle of rotation about y-axis [degrees]
 mp.dm1.zrot = 0;                % clocking of DM surface [degrees]
@@ -132,7 +194,7 @@ mp.dm1.edgeBuffer = 1;          % max radius (in actuator spacings) outside of b
 
 %--DM2 parameters
 mp.dm2.Nact = 64;               % # of actuators across DM array
-mp.dm2.VtoH = 10e-9*ones(mp.dm1.Nact);  % gains of all actuators [nm/V of free stroke]
+mp.dm2.VtoH = 1e-9*ones(mp.dm1.Nact);  % gains of all actuators [nm/V of free stroke]
 mp.dm2.xtilt = 0;               % for foreshortening. angle of rotation about x-axis [degrees]
 mp.dm2.ytilt = 0;               % for foreshortening. angle of rotation about y-axis [degrees]
 mp.dm2.zrot = 0;                % clocking of DM surface [degrees]
@@ -151,10 +213,6 @@ mp.d_P2_dm1 = 0;        % distance (along +z axis) from P2 pupil to DM1 [meters]
 mp.d_dm1_dm2 = 0.32;   % distance between DM1 and DM2 [meters]
 
 
-%--DM Pinned, Railed, and Stuck Actuators
-mp.dm1.pinned = []
-
-mp.dm1.Vpinned = [] %--(Fixed) relative voltage commands of pinned/railed actuators
 
 
 %% Optical Layout: All models
@@ -172,7 +230,10 @@ mp.Fend.FOV = 30; %--half-width of the field of view in both dimensions [lambda0
 
 %--Correction and scoring region definition
 mp.Fend.corr.Rin  = 2.0;   % inner radius of dark hole correction region [lambda0/D]
-mp.Fend.corr.Rout = 20;  % outer radius of dark hole correction region [lambda0/D]
+
+%mp.Fend.corr.Rout = 26;  % outer radius of dark hole correction region [lambda0/D]
+mp.Fend.corr.Rout = 20;   % Try this now.
+
 mp.Fend.corr.ang  = 180;  % angular opening of dark hole correction region [degrees]
 
 mp.Fend.score.Rin  = mp.Fend.corr.Rin;  % inner radius of dark hole scoring region [lambda0/D]
@@ -196,7 +257,7 @@ mp.P4.D = mp.P2.D;
 mp.P1.compact.Nbeam = 62*4; %62*7;
 mp.P2.compact.Nbeam = mp.P1.compact.Nbeam;
 mp.P3.compact.Nbeam = mp.P1.compact.Nbeam;
-mp.P4.compact.Nbeam = mp.P1.compact.Nbeam;  % P4 must be the same as P1 for Vortex. 
+mp.P4.compact.Nbeam = mp.P1.compact.Nbeam;  % P4 must be the same as P1 for Vortex.
 
 %--Number of re-imaging relays between pupil planesin compact model. Needed
 %to keep track of 180-degree rotations and (1/1j)^2 factors compared to the
@@ -207,18 +268,27 @@ mp.Nrelay2to3 = 1;
 mp.Nrelay3to4 = 1;
 mp.NrelayFend = 0; %--How many times to rotate the final image by 180 degrees
 
-%% Optical Layout: Full Model 
+%% Optical Layout: Full Model
 
 mp.full.flagPROPER = true; %--Whether the full model is a PROPER prescription
 mp.full.prescription = 'habex';
-mp.full.cor_type = 'vortex'; 
+mp.full.cor_type = 'vortex';
 %mp.full.map_dir = '/Users/ajriggs/Documents/habex/maps/';	%-- directory containing optical surface error maps
 
-if ispc; mp.full.map_dir = 'C:\Users\poon\Documents\dst_sim\proper-models\simple_habex\maps\'; end
-if ismac; mp.full.map_dir = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/maps_dir/'; end
-if (isunix && ~ismac); mp.full.map_dir = '/home/poon/dst_sim/proper-models/simple_habex/maps_dir/'; end
+% 383 COMPUTERS
+if isunix && ~ismac
+    mp.full.map_dir = '/home/poon/dst_sim/proper-models/simple_habex/maps_dir/'
+end
 
-mp.full.gridsize = 1024; % # of points across in PROPER model 
+% WINDOWS PC
+%mp.full.map_dir = 'C:\Users\poon\Documents\dst_sim\proper-models\simple_habex\maps\'
+
+% MACBOOK PRO
+if isunix && ismac
+    mp.full.map_dir = '/Users/poon/Documents/dst_sim/proper-models/simple_habex/maps_dir/'
+end
+
+mp.full.gridsize = 1024; % # of points across in PROPER model
 
 %--Focal planes
 mp.full.nout = ceil_even(1 + mp.Fend.res*(2*mp.Fend.FOV)); %  dimensions of output in pixels (overrides output_dim0)
@@ -234,8 +304,92 @@ mp.full.pupil_diam_pix = mp.P1.full.Nbeam;
 % mp.full.grid_size = mp.P1.full.Narr;
 
 mp.full.use_errors = true;
-mp.full.dm1.flatmap = fitsread([mp.full.map_dir, 'flat_map.fits']);
+mp.full.dm1.flatmap = fitsread([ mp.full.map_dir, 'flat_map.fits']);
 mp.full.dm2.flatmap = 0;
+
+%% Initialize the biasmap which is the flatmap converted to voltage
+
+mp.dm1.biasMap = mp.full.dm1.flatmap ./ mp.dm1.VtoH;
+mp.dm2.biasMap = mp.full.dm2.flatmap ./ mp.dm2.VtoH;
+
+%mp.dm1.biasMap(mp.dm1.pinned) = -50
+
+
+
+
+figure;
+subplot(1,2,1)
+imagesc(mp.dm1.biasMap)
+title('mp.dm1.biasMap (Volts)')
+xlabel('Horizontal Actuators')
+ylabel('Vertical Actuators')
+axis equal; axis tight;
+colorbar;
+set(gca,'fontsize',16)
+
+subplot(1,2,2)
+imagesc(mp.dm2.biasMap)
+title('mp.dm2.biasMap  (Volts)')
+xlabel('Horizontal Actuators')
+ylabel('Vertical Actuators')
+axis equal; axis tight;
+colorbar;
+set(gca,'fontsize',16)
+
+set(gcf,'position',[ 3146         358        1292         529])
+
+%% Deformable Mirrors: DM Errors
+
+mp.dm1.Vmin = -1000;  % See what f%alco_enforce_dm_constraints does with this
+mp.dm1.Vmax = 1000;
+
+mp.dm2.Vmin = -1000;  % See what f%alco_enforce_dm_constraints does with this
+mp.dm2.Vmax = 1000;
+
+
+mp.dm1.pinned = dm1.pinned;
+mp.dm1.Vpinned = -mp.dm1.biasMap(mp.dm1.pinned) - 250;
+
+mp.dm2.pinned = dm2.pinned;
+mp.dm2.Vpinned = -mp.dm2.biasMap(mp.dm2.pinned) - 250;
+
+
+
+
+
+% Check if the pinned actuators are outside the beam
+load('dm1_act_ele.mat','dm1_act_ele')
+load('dm2_act_ele.mat','dm2_act_ele')
+
+
+if isfield(mp.dm1,'pinned') && ismember(0,(ismember(mp.dm1.pinned,dm1_act_ele) ))
+    disp('Warning some of the pinned actuators in DM1 are outside the beam')
+    %beep;pause(1);beep;
+end
+if isfield(mp.dm2,'pinned') && ismember(0,(ismember(mp.dm2.pinned,dm2_act_ele) ))
+    disp('Warning some of the pinned actuators in DM2 are outside the beam')
+    %beep;pause(1);beep;
+end
+
+
+% NEW CODE:
+%mp.dm1.weak = [1886]
+%mp.dm1.VtoHweak = [.1e-9]
+
+if isfield(mp.dm1,'weak') && ismember(0,(ismember(mp.dm1.pinned,dm1_act_ele) ))
+    disp('Warning some of the weak actuators in DM1 are outside the beam')
+end
+if isfield(mp.dm2,'weak') && ismember(0,(ismember(mp.dm2.pinned,dm2_act_ele) ))
+    disp('Warning some of the weak actuators in DM2 are outside the beam')
+end
+
+
+
+%% Enforcement of stuck, pinned, or railed actuators in full
+
+% enforces the voltage values on the
+mp.dm1.enforce_absolute_voltage = true;
+mp.dm2.enforce_absolute_voltage = true;
 
 
 %% Mask Definitions
@@ -251,7 +405,7 @@ inputs.ID = mp.P1.IDnorm ; % [pupil diameters]
 inputs.OD = mp.P1.ODnorm; % [pupil diameters]
 inputs.Nbeam = mp.P1.compact.Nbeam;
 inputs.Npad = 2^(nextpow2(mp.P1.compact.Nbeam));
-mp.P1.compact.mask = falco_gen_pupil_Simple(inputs); 
+mp.P1.compact.mask = falco_gen_pupil_Simple(inputs);
 
 
 %% Lyot stop (P4) Definition and Generation
@@ -263,7 +417,7 @@ inputs.ID = mp.P4.IDnorm ; % [pupil diameters]
 inputs.OD = mp.P4.ODnorm; % [pupil diameters]
 inputs.Nbeam = mp.P4.compact.Nbeam;
 inputs.Npad = 2^(nextpow2(mp.P4.compact.Nbeam));
-mp.P4.compact.mask = falco_gen_pupil_Simple(inputs); 
+mp.P4.compact.mask = falco_gen_pupil_Simple(inputs);
 
 
 %% VC-Specific Values %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -273,3 +427,24 @@ mp.F3.VortexCharge = 6; %--Charge of the vortex mask
 % Mask values for PROPER model
 mp.full.normLyotDiam = mp.P4.ODnorm;
 mp.full.vortexCharge = mp.F3.VortexCharge;
+
+%% Turn on SVD plotting for regularization kicks
+mp.flagSVD = true;
+
+
+%% Added code to compute sensitivities
+
+%--Noll zernike modes for which to compute sensitivities
+mp.eval.indsZnoll = [2, 3];
+ 
+%--Amount of RMS Zernike mode used to calculate aberration sensitivities 
+% [meters]. WFIRST CGI uses 1e-9, and LUVOIR and HabEx use 1e-10. 
+mp.full.ZrmsVal = 10e-9; 
+ 
+%--Annuli to compute 1nm RMS Zernike sensitivities over.
+% Columns are [inner radius, outer radius]. One row per annulus.
+mp.eval.Rsens = [3, 5; ...
+         3, 20];  
+
+
+end
