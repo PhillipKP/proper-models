@@ -106,7 +106,7 @@ for fi = 1:length(TrialNumVec)
         semilogy(0:mp.Nitr,out.InormHist,'linewidth',3,'linestyle','--','color',ColorOdrCustom(grid_count,:));
         grid_count = grid_count + 1;
     elseif dm1p{fi} == 0
-        semilogy(0:mp.Nitr,out.InormHist,'linewidth',3,'linestyle','--','color',[0.41 0.41 0.41]); 
+        semilogy(0:mp.Nitr,out.InormHist,'linewidth',3,'linestyle','--','color',[0.0 0.0 0.0]); 
     end
     
     hold all
